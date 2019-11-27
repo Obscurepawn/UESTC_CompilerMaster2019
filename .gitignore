@@ -1,0 +1,5 @@
+*.docx
+*.exe
+*.o
+*.tab.o
+*.tab.h
