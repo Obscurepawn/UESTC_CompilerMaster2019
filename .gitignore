@@ -1,5 +1,5 @@
-*.docx
 *.exe
+*.docx
 *.o
-*.tab.o
 *.tab.h
+*.tab.o
