@@ -1,7 +1,6 @@
 %{
   #include"ast.h"
   //int yydebug=1;
-  extern ast_node astRoot;
 %}
 
 %union {
@@ -31,7 +30,7 @@
 %%
 program: external_declaration  {$$ = $1;}
        | program external_declaration  {$$ = CreateNewAstNode("","__list__",$1,$2);}
-       | program EOP {astRoot = $1;return;}
+       | program EOP {astRoot = $1;return 1;}
        ;
 external_declaration: function_definition {$$ = CreateNewAstNode("","ExternalDeclaration",$1,NULL);}
                     | declaration {$$ = CreateNewAstNode("","ExternalDeclaration",$1,NULL);}
