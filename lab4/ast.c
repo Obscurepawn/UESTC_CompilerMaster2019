@@ -53,11 +53,11 @@ void showAst(ptrast root, int depth)
 	if (checkFlag != -1)
 	{
 		printf("Operator:%s\n", root->nodetype);
-		if(checkFlag <= 5)
+		if (checkFlag <= 5)
 		{
 			produceSpace(depth);
-			printf("VariableName:%s\n",root->content);
-			showAst(root->left,depth);
+			printf("VariableName:%s\n", root->content);
+			showAst(root->left, depth);
 			return;
 		}
 	}

@@ -11,13 +11,6 @@ typedef struct AST *ptrast;
 typedef struct IF_StatementNode if_statement;
 typedef struct IF_StatementNode *ptr_if_statement;
 
-enum datatype
-{
-	INT,
-	VOID,
-	STR
-};
-
 struct AST
 {
 	char *nodetype;

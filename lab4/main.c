@@ -7,7 +7,7 @@ int main()
 		printf("open fail\n");
 	else
 		yyparse();
-	showAst(astRoot);
+	showAst(astRoot,0);
 	freeAst(astRoot);
 	return 0;
 }

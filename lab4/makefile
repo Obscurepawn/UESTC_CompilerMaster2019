@@ -1,8 +1,8 @@
 lrparser:main.o lrparser.tab.o ast.o lex.yy.o  
 	gcc -o lrparser main.o lrparser.tab.o ast.o lex.yy.o
 
-main.o:main.c lrparser.tab.h ast.h
-	gcc -c main.c
+main.o:main.c lrparser.tab.c
+	gcc -c main.c lrparser.tab.c
 
 lrparser.tab.o:lrparser.tab.c ast.h
 	gcc -c lrparser.tab.c
@@ -26,4 +26,4 @@ llvm:
 	clang -target x86_64-pc-windows-gnu test.c -emit-llvm -S
 
 clean:
-	$(RM) *.o *.l lex.yy.c *.tab.h *.tab.c
+	$(RM) *.o lex.yy.c *.tab.h *.tab.c
