@@ -1,12 +1,13 @@
 %{
-  #include"ast.h"
-  //int yydebug=1;
+  #include "ast.h"
+  int yydebug=1;
   extern struct AST *astRoot;
 %}
 
 %union {
   struct AST *ast_node;
   char *save_yytext;
+  int scope;
 }
 
 /* declare tokens */
@@ -27,30 +28,30 @@
 %token EOP
 
 %type <ast_node> initializer program external_declaration function_definition declaration init_declarator_list init_declarator intstr_list  declarator direct_declarator parameter_list parameter statement compound_statement statement_list expression_statement selection_statement iteration_statement jump_statement print_statement scan_statement expr expr_list add_expr assign_expr cmp_expr mul_expr primary_expr id_list
-%type <char *> type
-%type <int> begin_scope end_scope
+%type <save_yytext> type
+%type <scope> begin_scope end_scope
 
 %%
-program: external_declaration  {$$ = $1;}
-       | program external_declaration  {$$ = newListNode($1,$2);}
-       | program EOP {astRoot = $1;return 1;}
+program: external_declaration  {$$ = $1;astRoot = $$}
+       | program external_declaration  {$$ = newListNode($2,$1);}
+       | program EOP {return 1;}
        ;
 external_declaration: function_definition {$$ = $1;}
                     | declaration {$$ = $1;}
                     ;
-function_definition: type ID compound_statement {$$ = newAstNode("FunctionDef",strdup($2),0,$3,newAstNode("ReturnType",strdup($1),0,NULL,NULL));}
-                    ;
-declaration: type init_declarator_list ';' {$$ = newAstNode("VariableDec",strdup($1),0,$2,NULL);}
+function_definition: type declarator compound_statement {$$ = newAstNode("FunctionDef",$1,0,$2,$3);}
+                   ;
+declaration: type init_declarator_list ';' {$$ = newAstNode("VariableDec",$1,0,$2,NULL);}
            ;
 init_declarator_list: init_declarator {$$ = $1;}
-                    | init_declarator_list ',' init_declarator {$$ = newListNode($1,$3);}
+                    | init_declarator_list ',' init_declarator {$$ = newListNode($3,$1);}
                     ;
 init_declarator: declarator {$$ = $1;}
                | declarator '=' add_expr {$$ = newAstNode("VariableInit",NULL,0,$1,$3);}
                | declarator '=' '{' intstr_list '}' {$$ = newAstNode("ListInit",NULL,0,$1,$4);}
                ;
 intstr_list: initializer {$$ = $1;}
-           | intstr_list ',' initializer {$$ = newListNode($1,$3);}
+           | intstr_list ',' initializer {$$ = newListNode($3,$1);}
            ;
 initializer: NUMBER {$$ = newAstNode("Number",NULL,atof($1),NULL,NULL);}
            | STRING {$$ = newAstNode("String",strdup($1),0,NULL,NULL);}
@@ -58,19 +59,19 @@ initializer: NUMBER {$$ = newAstNode("Number",NULL,atof($1),NULL,NULL);}
 declarator: direct_declarator {$$ = $1;}
           ;
 direct_declarator: ID {$$ = newAstNode("VariableName",strdup($1),0,NULL,NULL);}
-                 | direct_declarator '(' parameter_list ')' {$$ = newAstNode("FunctionDec",NULL,0,$1,$3);}
-                 | direct_declarator '(' ')'  {$$ = newAstNode("FunctionDec",NULL,0,$1,NULL);}
+                 | direct_declarator '(' parameter_list ')' {$$ = newListNode($3,$1);}
+                 | direct_declarator '(' ')'  {$$ = $1;}
                  | ID '[' expr ']' {$$ = newAstNode("ListDec",strdup($1),0,$3,NULL);}
                  | ID '[' ']' {$$ = newAstNode("ListDec",strdup($1),0,NULL,NULL);}
                  ;
 parameter_list: parameter {$$ = $1;}
-              | parameter_list ',' parameter {$$ = newListNode($1,$3);}
+              | parameter_list ',' parameter {$$ = newListNode($3,$1);}
               ;
 parameter: type ID {$$ = newAstNode($1,strdup($2),0,NULL,NULL);}
          ;
-type: INT {$$ = "INT";}
-    | STR {$$ = "STR";}
-    | VOID {$$ = "VOID";}
+type: INT {$$ = "INT" ;}
+    | STR {$$ = "STR" ;}
+    | VOID {$$ = "VOID" ;}
     ;
 statement: compound_statement {$$ = $1;}
          | expression_statement {$$ = $1;}
@@ -89,7 +90,7 @@ begin_scope: '{' {$$ = '{';}
 end_scope: '}'  {$$ = '}';}
          ;
 statement_list: statement {$$ = $1;}
-             | statement_list statement {$$ = newListNode($1,$2);}
+             | statement_list statement {$$ = newListNode($2,$1);}
              ;
 expression_statement: ';' {$$=NULL;}
                     | expr ';' {$$ = $1;}
@@ -111,7 +112,7 @@ expr: assign_expr {$$ = $1;}
     ;
 assign_expr: cmp_expr {$$ = $1;}
            | ID ASSIGN assign_expr {$$ = newAstNode(strdup($2),strdup($1),0,$3,NULL);}
-           | ID '=' assign_expr {$$ = newAstNode("=","strdup($1)",0,$3,NULL);}
+           | ID '=' assign_expr {$$ = newAstNode("=",strdup($1),0,$3,NULL);}
            | ID '[' expr ']' '=' assign_expr {$$ = newAstNode("=",strdup($1),0,$3,$6);}
            ;
 cmp_expr: add_expr {$$ = $1;}
@@ -135,9 +136,9 @@ primary_expr: ID '(' expr_list ')' {$$ = newAstNode("FunctionRef",strdup($1),0,$
             | ID '[' expr ']' {$$ = newAstNode("ListRef",strdup($1),0,$3,NULL);}
             ;
 expr_list: expr {$$ = $1;}
-         | expr_list ',' expr {$$ = newListNode($1,$3);}
+         | expr_list ',' expr {$$ = newListNode($3,$1);}
 
 id_list: ID {$$ = newAstNode("VariableName",strdup($1),0,NULL,NULL);}
-       | id_list ',' ID {$$ = newListNode($1,$3);}
+       | id_list ',' ID {$$ = newListNode(newAstNode("VariableName",strdup($3),0,NULL,NULL),$1);}
        ;
 %%

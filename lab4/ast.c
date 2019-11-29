@@ -1,5 +1,22 @@
 #include "ast.h"
 
+char *OperaTor[] = {
+	"<",
+	">",
+	"=",
+	">=",
+	"<=",
+	"==",
+	"+",
+	"-",
+	"*",
+	"/",
+	":=",
+	"+=",
+	"/=",
+	"-=",
+	"*="};
+
 ptrast newAstNode(char *nodeType, char *content, int value, ptrast left, ptrast right)
 {
 	ptrast NewNode = (ptrast)malloc(sizeof(ast));
@@ -12,11 +29,18 @@ ptrast newAstNode(char *nodeType, char *content, int value, ptrast left, ptrast 
 	return NewNode;
 }
 
-ptrast newListNode(ptrast now, ptrast next)
+ptrast getLastNode(ptrast root)
 {
-	next->next = now;
-	ptrast temp = next;
-	return temp;
+	while (root->next != NULL)
+		root = root->next;
+	return root;
+}
+
+ptrast newListNode(ptrast next, ptrast now)
+{
+	ptrast temp = getLastNode(now);
+	temp->next = next;
+	return now;
 }
 
 ptrast newIfNode(char *nodetype, ptrast judge_exp, ptrast if_do_statement, ptrast else_do_statement)
@@ -27,13 +51,15 @@ ptrast newIfNode(char *nodetype, ptrast judge_exp, ptrast if_do_statement, ptras
 	NewNode->nodetype = nodetype;
 	NewNode->judge_exp = judge_exp;
 	NewNode->else_do_statement = else_do_statement;
+	NewNode->if_do_statement = if_do_statement;
+	NewNode->next = NULL;
 	return (ptrast)NewNode;
 }
 
 int checkOperator(ptrast root)
 {
 	for (int i = 0; i < 12; ++i)
-		if (!strcmp(root->nodetype, Operator[i]))
+		if (!strcmp(root->nodetype, OperaTor[i]))
 			return i;
 	return -1;
 }
@@ -44,26 +70,69 @@ void produceSpace(int depth)
 		printf(" ");
 }
 
+void DecDefPrint(int depth, ptrast root, char *content_title)
+{
+	printf("%s:", root->nodetype);
+	puts("");
+	produceSpace(depth + 1);
+	printf("%s:%s\n", content_title, root->content);
+}
+
 void showAst(ptrast root, int depth)
 {
 	if (root == NULL)
 		return;
-	produceSpace(depth);
-	int checkFlag = checkOperator(root);
-	if (checkFlag != -1)
+	else
 	{
-		printf("Operator:%s\n", root->nodetype);
-		if (checkFlag <= 5)
+		produceSpace(depth);
+		if (!strcmp(root->nodetype, "Number"))
+			printf("%s:%d\n", root->nodetype, root->value);
+		else if (!strcmp(root->nodetype, "FunctionDef"))
+			DecDefPrint(depth, root, "ReturnType");
+		else if (checkOperator(root) != -1)
+			printf("Operator:%s\n", root->nodetype);
+		else if (!strcmp(root->nodetype, "VariableDec"))
+			DecDefPrint(depth, root, "VariableType");
+		else if (!strcmp(root->nodetype, "IF_Stmt"))
 		{
+			ptr_if_statement temp = (ptr_if_statement)root;
+			ptrast judge_exp = temp->judge_exp;
+			ptrast if_do_statement = temp->if_do_statement;
+			ptrast else_do_statement = temp->else_do_statement;
+			printf("IF_Stmt:\n");
+			showAst(judge_exp, depth + 1);
+			showAst(if_do_statement, depth + 3);
 			produceSpace(depth);
-			printf("VariableName:%s\n", root->content);
-			showAst(root->left, depth);
+			printf("Else:\n");
+			showAst(else_do_statement, depth + 3);
+			showAst(temp->next,depth);
 			return;
 		}
+		else
+		{
+			printf("%s:", root->nodetype);
+			if (root->content)
+				printf("%s\n", root->content);
+			else
+				puts("");
+		}
+		showAst(root->left, depth + 1);
+		showAst(root->right, depth + 1);
 	}
 	showAst(root->next, depth);
-	showAst(root->left, depth);
-	showAst(root->right, depth);
+	return;
+}
+
+void freeAst(ptrast root)
+{
+	if (!root)
+		return;
+	freeAst(root->next);
+	freeAst(root->left);
+	freeAst(root->right);
+	free(root->content);
+	free(root->nodetype);
+	free(root);
 	return;
 }
 

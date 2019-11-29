@@ -43,6 +43,12 @@ void multable()
 	}
 }
 
+int main()
+{
+	multable();
+	return 0;
+}
+
 int fn(int n)
 {
 	if(n == 1)
@@ -51,13 +57,8 @@ int fn(int n)
 	{
 		int r = n* fn(n-1);
 		print r;
-		return r;
+		//return r;
 	}
-}
-
-
-int main()
-{
-	multable();
-	return 0;
+	int b = 0;
+	return b;
 }

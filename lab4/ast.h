@@ -26,29 +26,17 @@ struct IF_StatementNode
 	char *nodetype;
 	ptrast judge_exp;
 	ptrast if_do_statement;
+	ptrast *next;
 	ptrast else_do_statement;
 };
 
 /**interface to the ast.c**/
 ptrast newAstNode(char *nodetype, char *content, int value, ptrast left, ptrast right);
-ptrast newListNode(ptrast now, ptrast next);
+ptrast newListNode(ptrast next, ptrast now);
 ptrast newIfNode(char *nodetype, ptrast judge_exp, ptrast if_do_statement, ptrast else_do_statement);
 void showAst(ptrast root, int depth);
 void freeAst(ptrast root);
 char *strdup(const char *s);
-char *Operator[] = {
-	"<",
-	">",
-	"=",
-	">=",
-	"<=",
-	"==",
-	"==",
-	":=",
-	"+=",
-	"/=",
-	"-=",
-	"*="};
 
 /**interface to the lexer**/
 extern int yylineno;
