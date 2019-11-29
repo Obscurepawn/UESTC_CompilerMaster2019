@@ -1,6 +1,7 @@
 %{
-  #include"ast.h"
+  #include "ast.h"
   //int yydebug=1;
+  extern struct AST *astRoot;
 %}
 
 %union {

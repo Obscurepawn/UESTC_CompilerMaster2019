@@ -12,7 +12,6 @@ extern char *yytext;
 int yyerror(char *text);
 int yylex(void);
 extern FILE *yyin, *yyout;
-extern struct AST *astRoot;
 int yyparse();
 
 struct AST

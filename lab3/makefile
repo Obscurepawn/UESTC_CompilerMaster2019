@@ -26,4 +26,4 @@ llvm:
 	clang -target x86_64-pc-windows-gnu test.c -emit-llvm -S
 
 clean:
-	$(RM) *.o *.l lex.yy.c *.tab.h *.tab.c
+	$(RM) *.o lex.yy.c *.tab.h *.tab.c
