@@ -1,7 +1,6 @@
 %{
   #include "ast.h"
   int yydebug=1;
-  extern struct AST *astRoot;
 %}
 
 %union {
@@ -32,7 +31,7 @@
 %type <scope> begin_scope end_scope
 
 %%
-program: external_declaration  {$$ = $1;astRoot = $$}
+program: external_declaration  {$$ = $1;astRoot = $$;}
        | program external_declaration  {$$ = newListNode($2,$1);}
        | program EOP {return 1;}
        ;

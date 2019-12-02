@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct AST ast;
 typedef struct AST *ptrast;
@@ -26,7 +27,7 @@ struct IF_StatementNode
 	char *nodetype;
 	ptrast judge_exp;
 	ptrast if_do_statement;
-	ptrast *next;
+	ptrast next;
 	ptrast else_do_statement;
 };
 
@@ -37,6 +38,10 @@ ptrast newIfNode(char *nodetype, ptrast judge_exp, ptrast if_do_statement, ptras
 void showAst(ptrast root, int depth);
 void freeAst(ptrast root);
 char *strdup(const char *s);
+int checkOperator(ptrast root);
+void produceSpace(int depth);
+void DecDefPrint(int depth, ptrast root, char *content_title);
+
 
 /**interface to the lexer**/
 extern int yylineno;
@@ -44,8 +49,13 @@ extern char *yytext;
 int yyerror(char *text);
 int yylex(void);
 extern FILE *yyin, *yyout;
+extern ptrast astRoot;
 
 /**interface to the parser**/
 int yyparse();
+
+/**interface to the genLLVM.c**/
+void init();
+
 
 #endif

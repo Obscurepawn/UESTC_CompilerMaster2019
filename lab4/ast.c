@@ -105,7 +105,7 @@ void showAst(ptrast root, int depth)
 			produceSpace(depth);
 			printf("Else:\n");
 			showAst(else_do_statement, depth + 3);
-			showAst(temp->next,depth);
+			showAst(temp->next, depth);
 			return;
 		}
 		else
@@ -127,11 +127,18 @@ void freeAst(ptrast root)
 {
 	if (!root)
 		return;
+	if(!strcmp(root->nodetype,"IF_Stmt"))
+	{
+		ptr_if_statement temp = (ptr_if_statement)root;
+		freeAst(temp->next);
+		freeAst(temp->judge_exp);
+		freeAst(temp->if_do_statement);
+		freeAst(temp->else_do_statement);
+		return;
+	}
 	freeAst(root->next);
 	freeAst(root->left);
 	freeAst(root->right);
-	free(root->content);
-	free(root->nodetype);
 	free(root);
 	return;
 }
