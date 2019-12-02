@@ -6,8 +6,6 @@
 #include "llvm-c/Target.h"
 #include "llvm-c/Analysis.h"
 #include "llvm-c/BitWriter.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 // extern ptrast astRoot;
 
@@ -84,8 +82,12 @@ int main(int argc, char const *argv[]) {
 
     LLVMExecutionEngineRef engine;
     error = NULL;
+
+	/**must needed target**/
     LLVMInitializeNativeTarget();
     LLVMInitializeNativeAsmPrinter();
+	/**********************/
+
     LLVMLinkInMCJIT();
     if (LLVMCreateExecutionEngineForModule(&engine, mod, &error) != 0) {
         fprintf(stderr, "failed to create execution engine\n");
@@ -104,6 +106,7 @@ int main(int argc, char const *argv[]) {
     long long x = strtoll(argv[1], NULL, 10);
     long long y = strtoll(argv[2], NULL, 10);
 	printf("%lld,%lld\n",x,y);
+
 	// these codes didn't work
     // LLVMGenericValueRef args[] = {
     //     LLVMCreateGenericValueOfInt(LLVMInt32Type(), x, 0),

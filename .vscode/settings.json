@@ -1,0 +1,9 @@
+{
+	"files.associations": {
+		"executionengine.h": "c",
+		"inttypes.h": "c",
+		"cinttypes": "c",
+		"core.h": "c",
+		"*.def": "c"
+	}
+}

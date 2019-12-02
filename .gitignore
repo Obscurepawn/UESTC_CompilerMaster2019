@@ -4,3 +4,4 @@
 *.tab.h
 *.tab.o
 example
+*.bc
