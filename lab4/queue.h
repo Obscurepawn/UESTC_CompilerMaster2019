@@ -6,15 +6,6 @@
 
 #define Elemtype char*
 
-bool init_queue(pqe *que, int size);
-bool is_que_full(queue que);
-bool is_que_empty(queue que);
-bool que_push(pqe que, Elemtype data);
-Elemtype que_pop(pqe que);
-bool Destroy_que(pqe *que);
-bool outputQue(queue que);
-bool que_pop_all(pqe que);
-
 struct Queue
 {
     int len;
@@ -25,6 +16,15 @@ struct Queue
 
 typedef struct Queue queue;
 typedef struct Queue *pqe;
+
+bool init_queue(pqe *que, int size);
+bool is_que_full(queue que);
+bool is_que_empty(queue que);
+bool que_push(pqe que, Elemtype data);
+Elemtype que_pop(pqe que);
+bool Destroy_que(pqe *que);
+bool outputQue(queue que);
+bool que_pop_all(pqe que);
 
 bool init_queue(pqe *que, int size)
 {
@@ -110,7 +110,7 @@ bool outputQue(queue que)
     int tmp = que.front;
     while (tmp != que.rear)
     {
-        printf("%c\t", que.pdata[tmp]);
+        printf("%s\t", que.pdata[tmp]);
         tmp = (tmp + 1) % (que.len + 1);
     }
     puts("");
@@ -122,7 +122,7 @@ bool que_pop_all(pqe que)
     if (!que)
         return false;
     while (!is_que_empty(*que))
-        printf("%c\t", que_pop(que));
+        printf("%s\t", que_pop(que));
     puts("");
     return true;
 }

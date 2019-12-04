@@ -4,6 +4,9 @@
 		"inttypes.h": "c",
 		"cinttypes": "c",
 		"core.h": "c",
-		"*.def": "c"
+		"*.def": "c",
+		"limits.h": "c",
+		"climits": "c",
+		"string.h": "c"
 	}
 }
