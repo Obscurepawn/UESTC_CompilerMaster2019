@@ -7,6 +7,8 @@ int e;
 int main()
 {
 	static int d = 0;
+	double x = 0;
+	int k = 0;
 	char *a = "aaa";
 	char *b = "bbb";
 	char *c = (char*)malloc(strlen(a)+strlen(b));

@@ -13,10 +13,13 @@
 
 #define MAX_FILENAME 255
 
+int tempNum;
+
 extern ptrast astRoot;
 pqe GlobalDec;
 pqe FuncDec;
 pqe FuncBody;
+pqe LibFuncDec;
 
 char* getC_FileName();
 char* llvmFileName(char *filename);
@@ -32,10 +35,42 @@ bool genVarDec(ptrast root);
 char *getLLVMalloca();
 char *getLLVMstore();
 char *getLLVMload();
+char *getLLVMcall();
 char *getLLVMglobalStr();
 char *getLLVMglobalInt();
 char *getLLVMstaticStr();
 char *getLLVMstaticInt();
+char *getLLVMmalloc();
+
+char *getLLVMalloca(char *bitType)
+{
+    char *alloca = (char*)malloc(40);
+    int align;
+    if(!strcmp(bitType,"8*")||!strcmp(bitType,"double"))
+        align = 8;
+    else if(!strcmp(bitType,"32"))
+        align = 4;
+    sprintf(alloca,"%%%d = alloca i%s, align %d",tempNum,bitType,align);   
+    return alloca;
+}
+
+char *getLLVMstore(char *bitType,char *lvalue,int *rtemp)
+{
+    char *store = (char *)malloc(80);
+    int align  = 0;
+    if(!strcmp(bitType,"8*")||!strcmp(bitType,"double"))
+        align = 8;
+    else if(!strcmp(bitType,"32"))
+        align = 4;
+    sprintf(store,"store %s %s, %s* %%%d, align %d",bitType,lvalue,bitType,rtemp,align);
+    return store;
+}
+
+char *getLLVMload(char *bitType,)
+{
+
+}
+
 
 char* getC_FileName()
 {
@@ -84,6 +119,7 @@ char* sampleOsType()
 
 void init()
 {
+    int tempNum = 0;
     char *Cname = getC_FileName();
 	char *FileName = getllvmFileName(Cname);
     FILE *fp = fopen(FileName,"a+");
@@ -92,6 +128,8 @@ void init()
     fprintf(fp,"target datalayout = \"e-m:e-i64:64-f80:128-n8:16:32:64-S128\"\n");
     fprintf(fp,"target triple = %s",sampleOsType());
     fclose(fp);
+    free(Cname);
+    free(FileName);
 	return;
 }
 

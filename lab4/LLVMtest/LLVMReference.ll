@@ -8,32 +8,36 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.1 = private unnamed_addr constant [4 x i8] c"bbb\00", align 1
 @.str.2 = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
 @__const.test.a = private unnamed_addr constant [10 x i8] c"aaaaaaaaaa", align 1
-@a = common dso_local global i32 0, align 4
+@e = common dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main() #0 {
   %1 = alloca i32, align 4
-  %2 = alloca i8*, align 8
-  %3 = alloca i8*, align 8
+  %2 = alloca double, align 8
+  %3 = alloca i32, align 4
   %4 = alloca i8*, align 8
+  %5 = alloca i8*, align 8
+  %6 = alloca i8*, align 8
   store i32 0, i32* %1, align 4
-  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i8** %2, align 8
-  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), i8** %3, align 8
-  %5 = load i8*, i8** %2, align 8
-  %6 = call i64 @strlen(i8* %5) #5
-  %7 = load i8*, i8** %3, align 8
+  store double 0.000000e+00, double* %2, align 8
+  store i32 0, i32* %3, align 4
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i8** %4, align 8
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), i8** %5, align 8
+  %7 = load i8*, i8** %4, align 8
   %8 = call i64 @strlen(i8* %7) #5
-  %9 = add i64 %6, %8
-  %10 = call noalias i8* @malloc(i64 %9) #6
-  store i8* %10, i8** %4, align 8
-  %11 = load i8*, i8** %4, align 8
-  %12 = load i8*, i8** %2, align 8
-  %13 = call i8* @strcat(i8* %11, i8* %12) #6
+  %9 = load i8*, i8** %5, align 8
+  %10 = call i64 @strlen(i8* %9) #5
+  %11 = add i64 %8, %10
+  %12 = call noalias i8* @malloc(i64 %11) #6
+  store i8* %12, i8** %6, align 8
+  %13 = load i8*, i8** %6, align 8
   %14 = load i8*, i8** %4, align 8
-  %15 = load i8*, i8** %3, align 8
-  %16 = call i8* @strcat(i8* %14, i8* %15) #6
-  %17 = load i8*, i8** %4, align 8
-  %18 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0), i8* %17)
+  %15 = call i8* @strcat(i8* %13, i8* %14) #6
+  %16 = load i8*, i8** %6, align 8
+  %17 = load i8*, i8** %5, align 8
+  %18 = call i8* @strcat(i8* %16, i8* %17) #6
+  %19 = load i8*, i8** %6, align 8
+  %20 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0), i8* %19)
   ret i32 0
 }
 
