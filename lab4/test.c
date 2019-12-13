@@ -1,9 +1,8 @@
-
 // int a = 33, b, c = 44;
 // int bb = 3;
 // str aaa = "12345", bbb;
 
-str f(str k)
+str f()
 {
 	// str b = "aaa" ;
 	// str c = "ccc" ;

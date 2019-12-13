@@ -1,4 +1,4 @@
-#include "ast.h"
+//#include "ast.h"
 #include "queue.h"
 #include "main.h"
 #include "HashMap.h"
@@ -47,7 +47,7 @@ int alignJudge(char *bitType);
 char *bitTypeJudge(char *Type);
 char *getLLVMalloca(char *bitType);
 char *getLLVMstore(char *bitType, char *lvalue, int rtemp);
-char *getLLVMload(char *bitType, int serialNum);
+char *getLLVMload(char *bitType, char *serialNum);
 char *getLLVMcall(char *bitType, char *funcRef);
 char *getLLVMglobalStr();
 char *getLLVMglobalInt();
@@ -96,7 +96,7 @@ char *getLLVMalloca(char *bitType)
 {
     char *alloca = (char *)malloc(40);
     int align = alignJudge(bitType);
-    sprintf(alloca, "%%%d = alloca %s, align %d\n", tempNum, bitType, align);
+    sprintf(alloca, "%s%%%d = alloca %s, align %d\n",Tab, tempNum, bitType, align);
     return alloca;
 }
 
@@ -104,15 +104,15 @@ char *getLLVMstore(char *bitType, char *lvalue, int rtemp)
 {
     char *store = (char *)malloc(80);
     int align = alignJudge(bitType);
-    sprintf(store, "store %s %s, %s* %%%d, align %d\n", bitType, lvalue, bitType, rtemp, align);
+    sprintf(store, "%sstore %s %s, %s* %%%d, align %d\n",Tab, bitType, lvalue, bitType, rtemp, align);
     return store;
 }
 
-char *getLLVMload(char *bitType, int serialNum)
+char *getLLVMload(char *bitType, char *serialNum)
 {
     char *load = (char *)malloc(50);
     int align = alignJudge(bitType);
-    sprintf(load, "%%%d = load %s, %s* %%%d, align %d\n", tempNum, bitType, bitType, serialNum);
+    sprintf(load, "%s%%%d = load %s, %s* %s, align %d\n",Tab,tempNum++, bitType, bitType, serialNum,align);
     return load;
 }
 
@@ -120,7 +120,7 @@ char *getLLVMcall(char *bitType, char *funcRef)
 {
     char *call = (char *)malloc(60);
     int align = alignJudge(bitType);
-    sprintf(call, "%%%d = call %s %s\n", tempNum, bitType, funcRef);
+    sprintf(call, "%s%%%d = call %s %s\n",Tab,tempNum, bitType, funcRef);
     free(funcRef);
     return call;
 }
@@ -129,7 +129,9 @@ char *getLLVMadd(char *bitType, char *lop, char *rop)
 {
     char *add = (char *)malloc(100);
     int align = alignJudge(bitType);
-    sprintf(add, "%%%d = add nsw %s %s, %s\n", tempNum, bitType, lop, rop);
+    que_push(FuncBody,getLLVMload(bitType,lop));
+    que_push(FuncBody,getLLVMload(bitType,rop));
+    sprintf(add, "%s%%%d = add nsw %s %s, %s\n", Tab,tempNum, bitType, lop, rop);
     return add;
 }
 
@@ -137,7 +139,9 @@ char *getLLVMsub(char *bitType, char *lop, char *rop)
 {
     char *add = (char *)malloc(100);
     int align = alignJudge(bitType);
-    sprintf(add, "%%%d = sub nsw %s %s, %s\n", tempNum, bitType, lop, rop);
+    que_push(FuncBody,getLLVMload(bitType,lop));
+    que_push(FuncBody,getLLVMload(bitType,rop));
+    sprintf(add, "%s%%%d = sub nsw %s %s, %s\n",Tab,tempNum, bitType, lop, rop);
     return add;
 }
 
@@ -145,7 +149,9 @@ char *getLLVMmul(char *bitType, char *lop, char *rop)
 {
     char *mul = (char *)malloc(100);
     int align = alignJudge(bitType);
-    sprintf(mul, "%%%d = mul nsw %s %s, %s\n", tempNum, bitType, lop, rop);
+    que_push(FuncBody,getLLVMload(bitType,lop));
+    que_push(FuncBody,getLLVMload(bitType,rop));
+    sprintf(mul, "%s%%%d = mul nsw %s %s, %s\n",Tab, tempNum, bitType, lop, rop);
     return mul;
 }
 
@@ -153,7 +159,9 @@ char *getLLVMdiv(char *bitType, char *lop, char *rop)
 {
     char *div = (char *)malloc(100);
     int align = alignJudge(bitType);
-    sprintf(div, "%%%d = div nsw %s %s, %s\n", tempNum, bitType, lop, rop);
+    que_push(FuncBody,getLLVMload(bitType,lop));
+    que_push(FuncBody,getLLVMload(bitType,rop));
+    sprintf(div, "%s%%%d = div nsw %s %s, %s\n",Tab, tempNum, bitType, lop, rop);
     return div;
 }
 
@@ -161,7 +169,9 @@ char *getLLVMserm(char *bitType, char *lop, char *rop)
 {
     char *serm = (char *)malloc(100);
     int align = alignJudge(bitType);
-    sprintf(serm, "%%d = srem %s %s, %s\n", tempNum, bitType, lop, rop);
+    que_push(FuncBody,getLLVMload(bitType,lop));
+    que_push(FuncBody,getLLVMload(bitType,rop));
+    sprintf(serm, "%s%%%d = srem %s %s, %s\n",Tab, tempNum, bitType, lop, rop);
     return serm;
 }
 
@@ -201,23 +211,31 @@ char *LLVMCalBuilder(char *leftOp, char *rightOp, char *(*LLVMBuilder)(char *, c
 {
     ptrSb temp1;
     ptrSb temp2 = malloc(sizeof(sb));
+    ptrSb temp3;
     if (GlobalFlag == 1)
     {
         temp1 = (ptrSb)symbol_get(symbolTable, leftOp);
+        temp3 = (ptrSb)symbol_get(symbolTable, rightOp);
+        if(leftOp[0]!='%')
+            leftOp = temp1->serial;
+        if(rightOp[0]!='%')
+            rightOp = temp3->serial;
         if (!strcmp(temp1->type, "INT"))
         {
-            que_push(FuncBody, LLVMBuilder("i32", leftOp, rightOp));
-            tempNum++;
+            if(leftOp[0]=='%')
+                que_push(FuncBody, LLVMBuilder("i32", leftOp, rightOp));
+            else 
+                que_push(FuncBody, LLVMBuilder("i32", temp1->serial, temp2->serial));
             strcpy(temp2->type, "INT");
         }
         else if (!strcmp(temp1->type, "STR"))
         {
             que_push(FuncBody, LLVMBuilder("i8*", leftOp, rightOp));
-            tempNum++;
             strcpy(temp2->type, "STR");
         }
         sprintf(temp2->name, "%%%d", tempNum++);
         symbol_push(symbolTable, temp2);
+       // printf("%s\n",temp2->name);
         return temp2->name;
     }
     else if (GlobalFlag == 0)
@@ -264,14 +282,15 @@ bool isNumber(char *number)
         return isNumber(number+1);
     else
     {
+        int index = 0;
         int flag = 0;
-        while (number[0]!='\0')
+        while (number[index]!='\0')
         {
-            if(isdigit(number[0]))
+            if(isdigit(number[index++]))
                 continue;
             else if(number[0]=='.')
             {
-                if(flag!=0)
+                if(flag>1)
                     return false;
                 else
                     flag++;
@@ -500,7 +519,7 @@ int genVarDec(ptrast root)
             else if (!strcmp("VariableInit", root->nodetype))
             {
                 VarName = root->left->content;
-                char *rightValue = genExpr(root->right);
+                char *rightValue = genExpr(root->right);    
                 if (!strcmp(VarType, "STR"))
                 {
                     symbol = (ptrSb)symbol_get(symbolTable, rightValue);
@@ -524,6 +543,7 @@ int genVarDec(ptrast root)
                     sprintf(serial,"%%%d",tempNum++);
                     sprintf(Buffer,"%s%s = alloca i32, align 4\n",Tab ,serial);
                     que_push(FuncBody,strdup(Buffer));
+                   // printf("%s\n",rightValue);
                     if(isNumber(rightValue))
                     {
                         sprintf(Buffer, "%sstore i32 %s, i32* %s, align 4\n",Tab ,rightValue, serial);
@@ -562,12 +582,13 @@ char *genExpr(ptrast root)
         return NULL;
     char *leftOp, *rightOp;
     ptrSb symbol;
+    //ptrSb symbol2;
     if (!strcmp(root->nodetype, "+"))
     {
-        system("pause");
         leftOp = genExpr(root->left);
         rightOp = genExpr(root->right);
         symbol = (ptrSb)symbol_get(symbolTable, leftOp);
+        //symbol2 = (ptrSb)symbol_get(symbolTable,rightOp);
         if (strcmp(symbol->type, "STR") != 0)
             return LLVMCalBuilder(leftOp, rightOp, getLLVMadd);
         else
@@ -633,15 +654,14 @@ char *genExpr(ptrast root)
     }
     else if (!strcmp(root->nodetype,"VariableRef"))
     {
-       // printf("%s\n",root->content);
-        return strdup(root->content);
+        return root->content;
     }
 }
 
 void outputLLVM()
 {
     char *fileName = Init();
-    freopen(fileName, "a+", stdout);
+    //freopen(fileName, "a+", stdout);
     produceAst();
     //showAst(astRoot,0);
     genCode(astRoot);
