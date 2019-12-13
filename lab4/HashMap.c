@@ -3,82 +3,83 @@
 #include <string.h>
 #include <stdio.h>
 
-#define TABLE_SIZE (1024*1024)
+#define TABLE_SIZE (1024 * 1024)
+#define MAX_NAME 255
+#define show_symbol(p) printf("serial:%s,value:%d,string:%s,name:%s,type:%s\n",p->serial,p->value,p->string,p->name,p->type)
 
-/* element of the hash table's chain list */
-struct kv
-{
-    struct kv* next;
-    char* key;
-    void* value;
-    void(*free_value)(void*);
-};
+int tabNum = 0;
+extern void tabSpace();
 
-/* HashTable */
-struct HashTable
+/* constructor of sht */
+void init_subTable(ptrSht subTable)
 {
-    struct kv ** table;
-};
-
-/* constructor of struct kv */
-static void init_kv(struct kv* kv)
-{
-    kv->next = NULL;
-    kv->key = NULL;
-    kv->value = NULL;
-    kv->free_value = NULL;
+    subTable->next = NULL;
+    subTable->key = NULL;
+    subTable->value = NULL;
+    subTable->free_value = NULL;
 }
-/* destructor of struct kv */
-static void free_kv(struct kv* kv)
+/* destructor of sht */
+void free_subTable(ptrSht subTable)
 {
-    if (kv) {
-        if (kv->free_value) {
-            kv->free_value(kv->value);
-        }
-        free(kv->key);
-        kv->key = NULL;
-        free(kv);
+    ptrSht now = subTable;
+    ptrSht next = subTable->next;
+    if (next)
+    {
+        if (now->free_value)
+            now->free_value(subTable->value);
+        free(now->key);
+        now->key = NULL;
+        free(now);
+        now = next;
+        next = next->next;
     }
 }
 /* the classic Times33 hash function */
-static unsigned int hash_33(char* key)
+unsigned int hash_33(char *key)
 {
     unsigned int hash = 0;
-    while (*key) {
+    //do %d times-->%d:the length of the char *key
+    while (*key)
         hash = (hash << 5) + hash + *key++;
-    }
     return hash;
 }
 
 /* new a HashTable instance */
-HashTable* hash_table_new()
+HashTable *hash_table_new()
 {
-    HashTable* ht = malloc(sizeof(HashTable));
-    if (NULL == ht) {
+    HashTable *ht = malloc(sizeof(HashTable));
+    if (NULL == ht)
+    {
         hash_table_delete(ht);
         return NULL;
     }
-    ht->table = malloc(sizeof(struct kv*) * TABLE_SIZE);
-    if (NULL == ht->table) {
+    ht->table = malloc(sizeof(ptrSht) * TABLE_SIZE);
+    if (NULL == ht->table)
+    {
         hash_table_delete(ht);
         return NULL;
     }
-    memset(ht->table, 0, sizeof(struct kv*) * TABLE_SIZE);
-
+    memset(ht->table, 0, sizeof(ptrSht) * TABLE_SIZE);
+    ht->last = NULL;
     return ht;
 }
+
 /* delete a HashTable instance */
-void hash_table_delete(HashTable* ht)
+void hash_table_delete(ptrHt ht)
 {
-    if (ht) {
-        if (ht->table) {
+    if (ht)
+    {
+        if (ht->table)
+        {
             int i = 0;
-            for (i = 0; i<TABLE_SIZE; i++) {
-                struct kv* p = ht->table[i];
-                struct kv* q = NULL;
-                while (p) {
+            for (i = 0; i < TABLE_SIZE; i++)
+            {
+                ptrSht p = ht->table[i];
+                ptrSht q = NULL;
+                while (p)
+                {
                     q = p->next;
-                    free_kv(p);
+                    free_subTable(p);
                     p = q;
                 }
             }
@@ -90,15 +91,17 @@ void hash_table_delete(HashTable* ht)
 }
 
 /* insert or update a value indexed by key */
-int hash_table_put2(HashTable* ht, char* key, void* value, void(*free_value)(void*))
+int hash_table_put(HashTable *ht, char *key, void *value, void (*free_value)(void *))
 {
     int i = hash_33(key) % TABLE_SIZE;
-    struct kv* p = ht->table[i];
-    struct kv* prep = p;
-
-    while (p) { /* if key is already stroed, update its value */
-        if (strcmp(p->key, key) == 0) {
-            if (p->free_value) {
+    ptrSht p = ht->table[i];
+    ptrSht prep = p;
+    while (p)
+    { /* if key is already stroed, update its value */
+        if (strcmp(p->key, key) == 0)
+        {
+            if (p->free_value)
+            {
                 p->free_value(p->value);
             }
             p->value = value;
@@ -108,29 +111,33 @@ int hash_table_put2(HashTable* ht, char* key, void* value, void(*free_value)(voi
         prep = p;
         p = p->next;
     }
-
-    if (p == NULL) {/* if key has not been stored, then add it */
-        char* kstr = malloc(strlen(key) + 1);
-        if (kstr == NULL) {
+    if (p == NULL)
+    { /* if key has not been stored, then add it */
+        char *kstr = malloc(strlen(key) + 1);
+        if (kstr == NULL)
+        {
             return -1;
         }
-        struct kv * kv = malloc(sizeof(struct kv));
-        if (NULL == kv) {
+        ptrSht kv = malloc(sizeof(sht));
+        if (NULL == kv)
+        {
             free(kstr);
             kstr = NULL;
             return -1;
         }
-        init_kv(kv);
+        init_subTable(kv);
         kv->next = NULL;
         strcpy(kstr, key);
         kv->key = kstr;
         kv->value = value;
         kv->free_value = free_value;
 
-        if (prep == NULL) {
+        if (prep == NULL)
+        {
             ht->table[i] = kv;
         }
-        else {
+        else
+        {
             prep->next = kv;
         }
     }
@@ -138,12 +145,14 @@ int hash_table_put2(HashTable* ht, char* key, void* value, void(*free_value)(voi
 }
 
 /* get a value indexed by key */
-void* hash_table_get(HashTable* ht, char* key)
+void *hash_table_get(HashTable *ht, char *key)
 {
     int i = hash_33(key) % TABLE_SIZE;
-    struct kv* p = ht->table[i];
-    while (p) {
-        if (strcmp(key, p->key) == 0) {
+    ptrSht p = ht->table[i];
+    while (p)
+    {
+        if (strcmp(key, p->key) == 0)
+        {
             return p->value;
         }
         p = p->next;
@@ -152,19 +161,23 @@ void* hash_table_get(HashTable* ht, char* key)
 }
 
 /* remove a value indexed by key */
-void hash_table_rm(HashTable* ht, char* key)
+void hash_table_rm(HashTable *ht, char *key)
 {
     int i = hash_33(key) % TABLE_SIZE;
-	
-    struct kv* p = ht->table[i];
-    struct kv* prep = p;
-    while (p) {
-        if (strcmp(key, p->key) == 0) {
-            free_kv(p);
-            if (p == prep) {
+
+    ptrSht p = ht->table[i];
+    ptrSht prep = p;
+    while (p)
+    {
+        if (strcmp(key, p->key) == 0)
+        {
+            free_subTable(p);
+            if (p == prep)
+            {
                 ht->table[i] = NULL;
             }
-            else {
+            else
+            {
                 prep->next = p->next;
             }
         }
@@ -172,6 +185,66 @@ void hash_table_rm(HashTable* ht, char* key)
         p = p->next;
     }
 }
+
+ptrhs hash_stack_new()
+{
+    ptrhs hashStack = malloc(sizeof(hs));
+    if(!hashStack)
+        return NULL;
+    ptrHt globalSymTable = hash_table_new();
+    if(!globalSymTable)
+        return NULL;
+    globalSymTable->last = NULL;
+    hashStack->global = globalSymTable;
+    hashStack->now = globalSymTable;
+    return hashStack;
+}
+
+int hash_stack_subScope(ptrhs SymbolTable)
+{
+    ptrHt subScopeSymTable = hash_table_new();
+    if(!subScopeSymTable)
+        return -1;
+    subScopeSymTable->last = SymbolTable->now;
+    SymbolTable->now = subScopeSymTable;   
+    tabNum++;
+    tabSpace();
+    return 0;
+}
+
+void hash_stack_pop(ptrhs SymbolTable)
+{
+    ptrHt temp = SymbolTable->now->last;
+    hash_table_delete(SymbolTable->now);
+    SymbolTable->now = temp;
+    tabNum--;
+    tabSpace();
+}
+
+void* symbol_get(ptrhs SymbolTable,char *key)
+{
+    ptrHt temp = SymbolTable->now;
+    ptrSb symbol;
+    while (temp)
+    {
+        if(symbol = hash_table_get(temp,key))
+            return symbol;
+        else 
+            temp = temp->last;
+    }
+    return NULL;
+}
+
+void  symbol_push(ptrhs SymbolTable,ptrSb symbol)
+{
+    if(!symbol||!symbol->name)
+        return;
+    hash_table_put(SymbolTable->now,symbol->name,symbol,free);
+    return;
+}
+
+
+
 
 // // 要放入哈希表中的结构体
 // struct Student

@@ -1,15 +1,18 @@
 
-// int a,b;
 // int a = 33, b, c = 44;
 // int bb = 3;
-str aaa = "12345", bbb;
+// str aaa = "12345", bbb;
 
-str f()
+str f(str k)
 {
-	str b = "aaa" + "ddd";
-	str c = "ccc" + "bb";
-	//print c;
-	return c;
+	// str b = "aaa" ;
+	// str c = "ccc" ;
+	// str d = k;
+	int a = 1;
+	int b = 1;
+	int c = a + b;
+	//return c;
+	//return c;
 }
 
 

@@ -1,11 +1,20 @@
 FLAGS=$(shell llvm-config --cflags --ldflags --libs)
 FILE_NAME = genllvm
 
-lrparser:main.o lrparser.tab.o ast.o lex.yy.o  
-	gcc -o lrparser main.o lrparser.tab.o ast.o lex.yy.o
+genllvm:genllvm.o main.o lrparser.tab.o ast.o lex.yy.o HashMap.o
+	gcc -o $(FILE_NAME) genllvm.o main.o lrparser.tab.o ast.o lex.yy.o HashMap.o 
 	$(RM) *.o lex.yy.c *.tab.h *.tab.c *.bc
 
-main.o:main.c lrparser.tab.h ast.h
+genllvm.o:genllvm.c lrparser.tab.h 
+	gcc -c genllvm.c
+
+HashMap.o:HashMap.c HashMap.h
+	gcc -c HashMap.c
+
+lrparser.tab.c lrparser.tab.h:lrparser.y
+	bison -d lrparser.y
+
+main.o:main.c main.h
 	gcc -c main.c
 
 lrparser.tab.o:lrparser.tab.c ast.h
@@ -19,9 +28,6 @@ ast.o:ast.c ast.h
 
 lex.yy.c:lrlex.l
 	flex lrlex.l
-
-lrparser.tab.c lrparser.tab.h:lrparser.y
-	bison -d lrparser.y
 
 windows_clang_build: 
 	clang -target x86_64-pc-windows-gnu test.c -o hello.exe

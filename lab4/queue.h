@@ -33,7 +33,7 @@ bool init_queue(pqe *que, int size)
         return false;
     (*que)->len = size;
     (*que)->front = (*que)->rear = 0;
-    (*que)->pdata = (Elemtype *)malloc(sizeof(sizeof(Elemtype) * (size + 1)));
+    (*que)->pdata = (Elemtype *)malloc(sizeof(Elemtype) * (size + 1));
     return true;
 }
 
@@ -85,6 +85,25 @@ Elemtype que_pop(pqe que)
     return NULL;
 }
 
+void funcbody_put(pqe que)
+{
+    Elemtype temp;
+    while(1)
+    {
+        temp = que_pop(que);
+        if(!temp)
+            return;
+        else if(!strcmp(temp,"}\n\n"))
+        {
+            printf("}\n\n");
+            return;
+        }
+        else
+            printf("%s",temp);
+    }
+    return;
+}
+
 bool Destroy_que(pqe *que)
 {
     if (!(*que))
@@ -110,7 +129,7 @@ bool outputQue(queue que)
     int tmp = que.front;
     while (tmp != que.rear)
     {
-        printf("%s\t", que.pdata[tmp]);
+        printf("%s", que.pdata[tmp]);
         tmp = (tmp + 1) % (que.len + 1);
     }
     puts("");

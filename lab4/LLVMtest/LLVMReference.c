@@ -3,6 +3,7 @@
 #include<string.h>
 
 int e;
+char *v = "ccc";
 
 int main()
 {
@@ -18,8 +19,16 @@ int main()
  	//free(c);
 	return 0;
 }
+
 char test()
 {
 	char a[10] = "aaaaaaaaaa";
 	return a[6];
+}
+
+char *TEST(char *temp)
+{
+	char *kkk = temp;
+	char *aaa = kkk;
+	return kkk;
 }
