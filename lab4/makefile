@@ -1,8 +1,8 @@
 FLAGS=$(shell llvm-config --cflags --ldflags --libs)
 FILE_NAME = genllvm
 
-genllvm:genllvm.o main.o lrparser.tab.o ast.o lex.yy.o HashMap.o
-	gcc -o $(FILE_NAME) genllvm.o main.o lrparser.tab.o ast.o lex.yy.o HashMap.o 
+genllvm:genllvm.o makeAst.o lrparser.tab.o ast.o lex.yy.o HashMap.o
+	gcc -o $(FILE_NAME) genllvm.o makeAst.o lrparser.tab.o ast.o lex.yy.o HashMap.o 
 	$(RM) *.o lex.yy.c *.tab.h *.tab.c *.bc
 
 genllvm.o:genllvm.c lrparser.tab.h 
@@ -14,8 +14,8 @@ HashMap.o:HashMap.c HashMap.h
 lrparser.tab.c lrparser.tab.h:lrparser.y
 	bison -d lrparser.y
 
-main.o:main.c main.h
-	gcc -c main.c
+makeAst.o:makeAst.c makeAst.h
+	gcc -c makeAst.c
 
 lrparser.tab.o:lrparser.tab.c ast.h
 	gcc -c lrparser.tab.c

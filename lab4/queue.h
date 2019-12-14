@@ -92,15 +92,13 @@ void funcbody_put(pqe que)
     while(1)
     {
         temp = que_pop(que);
+         printf("%s",temp);
         if(!temp)
             return;
         else if(!strcmp(temp,"}\n\n"))
-        {
-            printf("}\n\n");
             return;
-        }
-        else
-            printf("%s",temp);
+        else 
+            continue;
     }
     return;
 }

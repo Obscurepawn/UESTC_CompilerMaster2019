@@ -4,6 +4,7 @@ char *OperaTor[] = {
 	"<",
 	">",
 	"=",
+	"%",
 	">=",
 	"<=",
 	"==",
@@ -58,7 +59,7 @@ ptrast newIfNode(char *nodetype, ptrast judge_exp, ptrast if_do_statement, ptras
 
 int checkOperator(ptrast root)
 {
-	for (int i = 0; i < 12; ++i)
+	for (int i = 0; i < 16; ++i)
 		if (!strcmp(root->nodetype, OperaTor[i]))
 			return i;
 	return -1;

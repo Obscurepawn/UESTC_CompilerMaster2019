@@ -1,6 +1,6 @@
 //#include "ast.h"
 #include "queue.h"
-#include "main.h"
+#include "makeAst.h"
 #include "HashMap.h"
 #include <unistd.h>
 #include <sys/types.h>
@@ -28,6 +28,7 @@ int ConstStringNum;    //to record the num of the constant string
 int tempNum = 0;       //to record the num of the temperary variable in a function
 ptrhs symbolTable;     //symbol table
 char *Tab = NULL;
+char *CompilerFile = NULL;
 
 void tabSpace();
 char *getC_FileName();
@@ -119,7 +120,7 @@ char *getLLVMload(char *bitType, char *serialNum)
 char *getLLVMcall(char *bitType, char *funcRef)
 {
     char *call = (char *)malloc(60);
-    int align = alignJudge(bitType);
+    //int align = alignJudge(bitType);
     sprintf(call, "%s%%%d = call %s %s\n",Tab,tempNum, bitType, funcRef);
     free(funcRef);
     return call;
@@ -128,7 +129,7 @@ char *getLLVMcall(char *bitType, char *funcRef)
 char *getLLVMadd(char *bitType, char *lop, char *rop)
 {
     char *add = (char *)malloc(100);
-    int align = alignJudge(bitType);
+   // int align = alignJudge(bitType);
     que_push(FuncBody,getLLVMload(bitType,lop));
     que_push(FuncBody,getLLVMload(bitType,rop));
     sprintf(add, "%s%%%d = add nsw %s %s, %s\n", Tab,tempNum, bitType, lop, rop);
@@ -138,7 +139,7 @@ char *getLLVMadd(char *bitType, char *lop, char *rop)
 char *getLLVMsub(char *bitType, char *lop, char *rop)
 {
     char *add = (char *)malloc(100);
-    int align = alignJudge(bitType);
+  //  int align = alignJudge(bitType);
     que_push(FuncBody,getLLVMload(bitType,lop));
     que_push(FuncBody,getLLVMload(bitType,rop));
     sprintf(add, "%s%%%d = sub nsw %s %s, %s\n",Tab,tempNum, bitType, lop, rop);
@@ -148,7 +149,7 @@ char *getLLVMsub(char *bitType, char *lop, char *rop)
 char *getLLVMmul(char *bitType, char *lop, char *rop)
 {
     char *mul = (char *)malloc(100);
-    int align = alignJudge(bitType);
+  //  int align = alignJudge(bitType);
     que_push(FuncBody,getLLVMload(bitType,lop));
     que_push(FuncBody,getLLVMload(bitType,rop));
     sprintf(mul, "%s%%%d = mul nsw %s %s, %s\n",Tab, tempNum, bitType, lop, rop);
@@ -158,7 +159,7 @@ char *getLLVMmul(char *bitType, char *lop, char *rop)
 char *getLLVMdiv(char *bitType, char *lop, char *rop)
 {
     char *div = (char *)malloc(100);
-    int align = alignJudge(bitType);
+  //  int align = alignJudge(bitType);
     que_push(FuncBody,getLLVMload(bitType,lop));
     que_push(FuncBody,getLLVMload(bitType,rop));
     sprintf(div, "%s%%%d = div nsw %s %s, %s\n",Tab, tempNum, bitType, lop, rop);
@@ -318,16 +319,26 @@ char *Init()
     init_queue(&FuncHead, MAX_NUM);
     init_queue(&FuncBody, MAX_NUM);
     init_queue(&GlobalContext, MAX_NUM);
-    char *Cname = getC_FileName();
-    char *FileName = getllvmFileName(Cname);
+    //char *Cname = getC_FileName();
+    char *FileName = getllvmFileName(CompilerFile);
     FILE *fp = fopen(FileName, "w+");
-    fprintf(fp, "; ModuleID = `%s`\n", Cname);
-    fprintf(fp, "source_filename = \"%s\"\n", Cname);
+    fprintf(fp, "; ModuleID = `%s`\n", CompilerFile);
+    fprintf(fp, "source_filename = \"%s\"\n", CompilerFile);
     fprintf(fp, "target datalayout = \"e-m:e-i64:64-f80:128-n8:16:32:64-S128\"\n");
     fprintf(fp, "target triple = %s", sampleOsType());
     fclose(fp);
-    free(Cname);
+    //free(Cname);
     return FileName;
+}
+
+void funcPut()
+{
+    while(!is_que_empty(*FuncHead)&&!is_que_empty(*FuncBody))
+    {
+        printf("%s",que_pop(FuncHead));
+        funcbody_put(FuncBody);
+    }
+    return;
 }
 
 bool addSymbol(char *serial, int value, char *type, char *string, char *name)
@@ -406,8 +417,8 @@ int genFuncDef(ptrast root)
         Buffer[bufferLen] = ')';
         Buffer[bufferLen+1] = '\0';
     }
-    sprintf(funcHead, "define dso_local %s @%s%s #0 {\t", bitTypeJudge(ReturnType), FuncName, Buffer);
-    que_push(FuncHead, funcHead);
+    sprintf(funcHead, "define dso_local %s @%s%s #0 {\t\n", bitTypeJudge(ReturnType), FuncName, Buffer);
+    que_push(FuncHead, strdup(funcHead));
     genStatement(statement);
     hash_stack_pop(symbolTable);
     que_push(FuncBody,"}\n\n");
@@ -528,7 +539,15 @@ int genVarDec(ptrast root)
                     sprintf(Buffer,"%s%s = alloca i8*, align 8\n",Tab,serial);
                     que_push(FuncBody,strdup(Buffer));
                     if(rightValue[0] == '.')
-                        sprintf(Buffer, "%sstore i8* getelementptr inbounds ([%d x i8], [%d x i8]* @%s, i32 0, i32 0), i8** %s, align 8\n",Tab ,length+1, length+1, rightValue,serial);
+                    {
+                        sprintf(Buffer,"%s%%%d = call noalias i8* @malloc(i64 %d) #3\n",Tab,tempNum++,length+1);
+                        que_push(FuncBody,strdup(Buffer));
+                        sprintf(Buffer,"%sstore i8* %%%d, i8** %s, align 8\n",Tab,tempNum-1,serial);
+                        que_push(FuncBody,strdup(Buffer));
+                        sprintf(Buffer,"%s%%%d = load i8*, i8** %s, align 8\n",Tab,tempNum++,serial);
+                        que_push(FuncBody,strdup(Buffer));
+                        sprintf(Buffer, "%s%%%d = call i8* @strcpy(i8* %%%d, i8* getelementptr inbounds ([%d x i8], [%d x i8]* @%s, i32 0, i32 0)) #3\n",Tab ,tempNum,tempNum-1,length+1, length+1, rightValue);
+                    }
                     else
                     {
                         sprintf(Buffer,"%s%%%d = load i8*, i8** %s, align 8\n",Tab,tempNum++,symbol->serial);
@@ -612,7 +631,7 @@ char *genExpr(ptrast root)
         rightOp = genExpr(root->right);
         return LLVMCalBuilder(leftOp, rightOp, getLLVMsub);
     }
-    else if (!strcmp(root->nodetype, "%%"))
+    else if (!strcmp(root->nodetype, "%"))
     {
         leftOp = genExpr(root->left);
         rightOp = genExpr(root->right);
@@ -633,20 +652,19 @@ char *genExpr(ptrast root)
         temp = strdup(root->content);
         temp[strlen(temp)-1] = '\0';
         ++temp;
-       // printf("TEMP:%s\n",temp);
+       // printf("TEMP:%s\n",temp);F
         if (ConstStringNum == 0)
         {
-            sprintf(buffer, "@.str = private unnamed_addr constant [%d x i8] c\"%s\\00\", align 1\n", strlen(temp) + 1, temp);
+            sprintf(buffer, "@.str = private unnamed_addr constant [%d x i8] c\"%s\\00\", align 1\n", (int)strlen(temp) + 1, temp);
             ConstStringNum++;
             que_push(GlobalContext, buffer);
             addSymbol("-1", 0, "STR", temp, ".str");
-            return ".str";
-        }
+            return ".str";}
         else
         {
             char *strName = malloc(30);
             sprintf(strName, ".str.%d", ConstStringNum++);
-            sprintf(buffer, "@%s = private unnamed_addr constant [%d x i8] c\"%s\\00\", align 1\n", strName, strlen(temp) + 1, temp);
+            sprintf(buffer, "@%s = private unnamed_addr constant [%d x i8] c\"%s\\00\", align 1\n", strName, (int)strlen(temp) + 1, temp);
             que_push(GlobalContext, buffer);
             addSymbol("-1", 0, "STR", temp, strName);
             return strName;
@@ -661,13 +679,12 @@ char *genExpr(ptrast root)
 void outputLLVM()
 {
     char *fileName = Init();
-    //freopen(fileName, "a+", stdout);
+    freopen(fileName, "a+", stdout);
     produceAst();
     //showAst(astRoot,0);
     genCode(astRoot);
     outputQue(*GlobalContext);
-    outputQue(*FuncHead);
-    outputQue(*FuncBody); 
+    funcPut();
     Destroy_que(&GlobalContext);
     Destroy_que(&FuncHead);
     Destroy_que(&FuncBody);
@@ -675,10 +692,14 @@ void outputLLVM()
     return;
 }
 
-int main()
+int main(int argc,char *argv[])
 {
-    outputLLVM();
-    freeAst(astRoot);
+    for(int i = 1;i<argc;++i)
+    {
+        CompilerFile = argv[i];
+        outputLLVM();
+        freeAst(astRoot);
+    }
     return 0;
 }
 
