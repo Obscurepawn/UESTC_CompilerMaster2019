@@ -10,15 +10,19 @@ target triple = "x86_64-pc-linux-gnu"
 @e = common dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @main() #0 {
-  %1 = alloca i32, align 4
-  %2 = alloca i8*, align 8
-  store i32 0, i32* %1, align 4
-  %3 = call noalias i8* @malloc(i64 3) #3
-  store i8* %3, i8** %2, align 8
-  %4 = load i8*, i8** %2, align 8
-  %5 = call i8* @strcpy(i8* %4, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0)) #3
-  ret i32 0
+define dso_local i32 @main(i32, i8**) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i8**, align 8
+  %6 = alloca i8*, align 8
+  store i32 0, i32* %3, align 4
+  store i32 %0, i32* %4, align 4
+  store i8** %1, i8*** %5, align 8
+  %7 = call noalias i8* @malloc(i64 3) #3
+  store i8* %7, i8** %6, align 8
+  %8 = load i8*, i8** %6, align 8
+  %9 = call i8* @strcpy(i8* %8, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0)) #3
+  ret i32 8
 }
 
 ; Function Attrs: nounwind

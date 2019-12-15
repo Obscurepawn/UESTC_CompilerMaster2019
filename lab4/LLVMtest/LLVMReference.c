@@ -5,7 +5,7 @@
 int e;
 char *v = "ccc";
 
-int main()
+int main(int argc,char *argv[])
 {
 	// static int d = 0;
 	// double x = 0;
@@ -21,7 +21,7 @@ int main()
 	// strcat(c,b);
 	// printf("%s\n",c);
  	//free(c);
-	return 0;
+	return 8;
 }
 
 int test()

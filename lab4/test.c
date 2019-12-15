@@ -1,29 +1,38 @@
-int a = 33, b, c = 44;
-int bb = 3;
-str aaa = "12345", bbb;
+// int a = 33, b, c = 44;
+// int bb = 3;
+// str aaa = "12345", bbb;
 
-str f(str k)
-{
-	str b = "aaa" ;
-	str c = "ccc" ;
-	str d = k;
-	//return c;
-	//return c;
-}
-
-str mm(str k)
+int main()
 {
 	int a = 1;
 	int b = 1;
 	int c = a + b;
-	int mc = c*a;
-	int mk = c/a;
-	int mmmmp = c-a;
-	//int fkm = -a;
-	int mmp = c%a;
-	//return c;
-	//return c;
+	//int a = 888 + 12;
+	//return 0;
 }
+
+// str f(str k)
+// {
+// 	str b = "aaa" ;
+// 	str c = "ccc" ;
+// 	str d = k;
+// 	//return c;
+// 	//return c;
+// }
+
+// str mm(str k)
+// {
+// 	int a = 1;
+// 	int b = 1;
+// 	int c = a + b;
+// 	int mc = c*a;
+// 	int mk = c/a;
+// 	int mmmmp = c-a;
+// 	//int fkm = -a;
+// 	int mmp = c%a;
+// 	//return c;
+// 	//return c;
+// }
 
 
 // int func1(int fir, int sec)
