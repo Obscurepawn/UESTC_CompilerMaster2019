@@ -10,9 +10,16 @@ int main(int argc,char *argv[])
 	// static int d = 0;
 	// double x = 0;
 	// int k = 0;
-	// int kkkkk = 1;
-	// int bbbbb = 2;
-	// int ccccc = kkkkk + bbbbb;
+	int kkkkk = 1;
+	int bbbbb = 2;
+	int yyyyyyyy = kkkkk/bbbbb;
+	int ccccc = kkkkk + bbbbb;
+	ccccc = kkkkk;
+	ccccc = 1;
+	ccccc = kkkkk + bbbbb;
+	ccccc /= kkkkk;
+	//int yyyyyy = 1;
+	int oooooo = 888+12;
 	char *a = malloc(strlen("aaa"));
 	strcpy(a,"aaa");
 	// char *b = "bbb";
@@ -24,15 +31,15 @@ int main(int argc,char *argv[])
 	return 8;
 }
 
-int test()
-{
-	char a[10] = "aaaaaaaaaa";
-	return 0;
-}
+// int test()
+// {
+// 	char a[10] = "aaaaaaaaaa";
+// 	return 0;
+// }
 
-char *TEST(char *temp)
-{
-	char *kkk = temp;
-	char *aaa = kkk;
-	return kkk;
-}
+// char *TEST(char *temp)
+// {
+// 	char *kkk = temp;
+// 	char *aaa = kkk;
+// 	return kkk;
+// }

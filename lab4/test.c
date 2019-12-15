@@ -1,38 +1,51 @@
-// int a = 33, b, c = 44;
-// int bb = 3;
-// str aaa = "12345", bbb;
+int a = 33, b, c = 44;
+int bb = 3;
+str aaa = "12345", bbb;
 
 int main()
 {
 	int a = 1;
 	int b = 1;
-	int c = a + b;
-	//int a = 888 + 12;
-	//return 0;
+	// a = b*3;
+	// b = a+a;
+	// b = a/b;
+	// a = b+b+b+b;
+	a /= 1;
+	b *= a;
+	b += b;
+	b -= a+b;
+	// int c = a + b;
+	// int a = 888 + 12;
+	// return 0;
 }
 
-// str f(str k)
-// {
-// 	str b = "aaa" ;
-// 	str c = "ccc" ;
-// 	str d = k;
-// 	//return c;
-// 	//return c;
-// }
+void f(str k)
+{
+	str b = "aaa" ;
+	str c = "ccc" ;
+	str d = k;
+	//return c;
+	//return c;
+}
 
-// str mm(str k)
-// {
-// 	int a = 1;
-// 	int b = 1;
-// 	int c = a + b;
-// 	int mc = c*a;
-// 	int mk = c/a;
-// 	int mmmmp = c-a;
-// 	//int fkm = -a;
-// 	int mmp = c%a;
-// 	//return c;
-// 	//return c;
-// }
+void mm(str k)
+{
+	int a = 1;
+	int b = 1;
+	a = b*2;
+	int c = a + b;
+	int mc = c*a;
+	int mk = c/a;
+	int mmmmp = c-a;
+	int kkkkl = 4/2;
+	int ere = 4*2;
+	int ccc = 4-2;
+	int mmmmmmmp = 8%2;
+	//int fkm = -a;
+	int mmp = c%a;
+	//return c;
+	//return c;
+}
 
 
 // int func1(int fir, int sec)

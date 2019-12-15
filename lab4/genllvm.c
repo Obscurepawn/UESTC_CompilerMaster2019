@@ -29,6 +29,7 @@ int tempNum = 0;       //to record the num of the temperary variable in a functi
 ptrhs symbolTable;     //symbol table
 char *Tab = NULL;
 char *CompilerFile = NULL;
+//char *ReturnType = NULL;
 
 void tabSpace();
 char *getC_FileName();
@@ -130,55 +131,185 @@ char *getLLVMcall(char *bitType, char *funcRef)
 char *getLLVMadd(char *bitType, char *lop, char *rop)
 {
     char *add = (char *)malloc(100);
+    char lBuffer[20];
+    char rBuffer[20];
+    int flag1 = 0,flag2 = 0;
     if(!isNumber(lop))
+    {
         que_push(FuncBody,getLLVMload(bitType,lop));
+        sprintf(lBuffer,"%%%d",tempNum-1);
+        flag1 = 1;
+    }
+    else
+        sprintf(lBuffer,lop);
     if(!isNumber(rop))
+    {
         que_push(FuncBody,getLLVMload(bitType,rop));
-    sprintf(add, "%s%%%d = add nsw %s %%%d, %%%d\n", Tab,tempNum, bitType, tempNum-2, tempNum-1);
+        sprintf(rBuffer,"%%%d",tempNum-1);
+        flag2 = 1;
+    }
+    else
+        sprintf(rBuffer,rop);
+    if(!flag1&&!flag2)
+    {
+        double lvalue = atof(lBuffer);
+        double rvalue = atof(rBuffer);
+        double sum = lvalue + rvalue;
+        char *sumBuffer = malloc(20);
+        sprintf(sumBuffer,"%g",sum);
+        free(add);
+        return sumBuffer;
+    }
+    else
+        sprintf(add, "%s%%%d = add nsw %s %s, %s\n", Tab,tempNum, bitType, lBuffer, rBuffer);
     return add;
 }
 
 char *getLLVMsub(char *bitType, char *lop, char *rop)
 {
     char *sub = (char *)malloc(100);
+    char lBuffer[20];
+    char rBuffer[20];
+    int flag1 = 0,flag2 = 0;
     if(!isNumber(lop))
+    {
         que_push(FuncBody,getLLVMload(bitType,lop));
+        sprintf(lBuffer,"%%%d",tempNum-1);
+        flag1 = 1;
+    }
+    else
+        sprintf(lBuffer,lop);
     if(!isNumber(rop))
+    {
         que_push(FuncBody,getLLVMload(bitType,rop));
-    sprintf(sub, "%s%%%d = sub nsw %s %%%d, %%%d\n", Tab,tempNum, bitType, tempNum-2, tempNum-1);
+        sprintf(rBuffer,"%%%d",tempNum-1);
+        flag2 = 1;
+    }
+    else
+        sprintf(rBuffer,rop);
+    if(!flag1&&!flag2)
+    {
+        double lvalue = atof(lBuffer);
+        double rvalue = atof(rBuffer);
+        double valueSub = lvalue - rvalue;
+        char *subBuffer = malloc(20);
+        sprintf(subBuffer,"%g",valueSub);
+        free(sub);
+        return subBuffer;
+    }
+    else
+        sprintf(sub, "%s%%%d = sub nsw %s %s, %s\n", Tab,tempNum, bitType, lBuffer, rBuffer);
     return sub;
 }
 
 char *getLLVMmul(char *bitType, char *lop, char *rop)
 {
     char *mul = (char *)malloc(100);
+    char lBuffer[20];
+    char rBuffer[20];
+    int flag1 = 0,flag2 = 0;
     if(!isNumber(lop))
+    {
         que_push(FuncBody,getLLVMload(bitType,lop));
+        sprintf(lBuffer,"%%%d",tempNum-1);
+        flag1 = 1;
+    }
+    else
+        sprintf(lBuffer,lop);
     if(!isNumber(rop))
+    {
         que_push(FuncBody,getLLVMload(bitType,rop));
-    sprintf(mul, "%s%%%d = mul nsw %s %%%d, %%%d\n", Tab,tempNum, bitType, tempNum-2, tempNum-1);
+        sprintf(rBuffer,"%%%d",tempNum-1);
+        flag2 = 1;
+    }
+    else
+        sprintf(rBuffer,rop);
+    if(!flag1&&!flag2)
+    {
+        double lvalue = atof(lBuffer);
+        double rvalue = atof(rBuffer);
+        double valueMul = lvalue * rvalue;
+        char *mulBuffer = malloc(20);
+        sprintf(mulBuffer,"%g",valueMul);
+        free(mul);
+        return mulBuffer;
+    }
+    else
+        sprintf(mul, "%s%%%d = mul nsw %s %s, %s\n", Tab,tempNum, bitType, lBuffer, rBuffer);
     return mul;
 }
 
 char *getLLVMdiv(char *bitType, char *lop, char *rop)
 {
     char *div = (char *)malloc(100);
+    char lBuffer[20];
+    char rBuffer[20];
+    int flag1 = 0,flag2 = 0;
     if(!isNumber(lop))
+    {
         que_push(FuncBody,getLLVMload(bitType,lop));
+        sprintf(lBuffer,"%%%d",tempNum-1);
+        flag1 = 1;
+    }
+    else
+        sprintf(lBuffer,lop);
     if(!isNumber(rop))
+    {
         que_push(FuncBody,getLLVMload(bitType,rop));
-    sprintf(div, "%s%%%d = div nsw %s %%%d, %%%d\n", Tab,tempNum, bitType, tempNum-2, tempNum-1);
+        sprintf(rBuffer,"%%%d",tempNum-1);
+        flag2 = 1;
+    }
+    else
+        sprintf(rBuffer,rop);
+    if(!flag1&&!flag2)
+    {
+        double lvalue = atof(lBuffer);
+        double rvalue = atof(rBuffer);
+        double valueDiv = lvalue / rvalue;
+        char *divBuffer = malloc(20);
+        sprintf(divBuffer,"%g",valueDiv);
+        free(div);
+        return divBuffer;
+    }
+    else
+        sprintf(div, "%s%%%d = sdiv nsw %s %s, %s\n", Tab,tempNum, bitType, lBuffer, rBuffer);
     return div;
 }
 
 char *getLLVMserm(char *bitType, char *lop, char *rop)
 {
     char *serm = (char *)malloc(100);
+    char lBuffer[20];
+    char rBuffer[20];
+    int flag1 = 0,flag2 = 0;
     if(!isNumber(lop))
+    {
         que_push(FuncBody,getLLVMload(bitType,lop));
+        sprintf(lBuffer,"%%%d",tempNum-1);
+        flag1 = 1;
+    }
+    else
+        sprintf(lBuffer,lop);
     if(!isNumber(rop))
+    {
         que_push(FuncBody,getLLVMload(bitType,rop));
-    sprintf(serm, "%s%%%d = serm %s %%%d, %%%d\n", Tab,tempNum, bitType, tempNum-2, tempNum-1);
+        sprintf(rBuffer,"%%%d",tempNum-1);
+        flag2 = 1;
+    }
+    else
+        sprintf(rBuffer,rop);
+    if(!flag1&&!flag2)
+    {
+        double lvalue = atof(lBuffer);
+        double rvalue = atof(rBuffer);
+        int valueSerm = (int)lvalue % (int)rvalue;
+        char *sermBuffer = malloc(20);
+        sprintf(sermBuffer,"%g",valueSerm);
+        free(serm);
+        return sermBuffer;
+    }
+    else
+        sprintf(serm, "%s%%%d = serm %s %s, %s\n", Tab,tempNum, bitType, lBuffer, rBuffer);
     return serm;
 }
 
@@ -222,6 +353,7 @@ char *LLVMCalBuilder(char *leftOp, char *rightOp, char *(*LLVMBuilder)(char *, c
     ptrSb temp3=NULL;
     int flag = 0;
     char *lop,*rop;
+    char *temp;
     if (GlobalFlag == 1)
     {
         if(!isNumber(leftOp))
@@ -253,7 +385,14 @@ char *LLVMCalBuilder(char *leftOp, char *rightOp, char *(*LLVMBuilder)(char *, c
         //printf("lop:%s\nrop:%s\n",lop,rop);
         if (flag==1||!strcmp(temp1->type, "INT"))
         {
-            que_push(FuncBody, LLVMBuilder("i32", lop, rop));
+            temp = LLVMBuilder("i32",lop,rop);
+            if(!isNumber(temp))
+                que_push(FuncBody, temp);
+            else
+            {
+                free(temp2);
+                return temp;
+            }
             strcpy(temp2->type, "INT");
         }
         else if (!strcmp(temp1->type, "STR"))
@@ -455,6 +594,8 @@ int genFuncDef(ptrast root)
     genStatement(statement);
     hash_stack_pop(symbolTable);
     que_push(FuncBody,"}\n\n");
+    free(ReturnType);
+    ReturnType = NULL;
     return 0;
 }
 
@@ -462,6 +603,8 @@ int genStatement(ptrast root)
 {
     if(!root)
         return -1;
+    while(root)
+    {
     if (!strcmp(root->nodetype, "IF_Stmt"))
     {
     }
@@ -470,9 +613,18 @@ int genStatement(ptrast root)
     }
     else if (!strcmp(root->nodetype, "ReturnStmt"))
     {
-        // char *returnValue = genExpr(root->left);
-        // char *Buffer = malloc(300);
-        // sprintf(Buffer,"ret %s %s",);
+        char *returnValue = genExpr(root->left);
+        char *returnType;
+        if(isNumber(returnValue))
+            returnType = "i32";
+        else
+        {
+            ptrSb symbol = symbol_get(symbolTable,returnValue);
+            returnType = symbol->type;
+        }
+        char Buffer[100];
+        sprintf(Buffer,"%sret %s %s\n",Tab,returnType,returnValue);
+        que_push(FuncBody,strdup(Buffer));
     }
     else if (!strcmp(root->nodetype, "PrintStmt"))
     {
@@ -481,15 +633,11 @@ int genStatement(ptrast root)
     {
     }
     else if (!strcmp(root->nodetype, "VariableDec"))
-    {
-        while (root)
-        {
             genVarDec(root);
-            root = root->next;
-        }
-    }
     else
         genExpr(root);
+    root = root->next;
+    }
     return 0;
 }
 
@@ -643,9 +791,7 @@ char *genExpr(ptrast root)
     {
         leftOp = genExpr(root->left);
         rightOp = genExpr(root->right);
-        //printf("lop:%s\nrop:%s\n",leftOp,rightOp);
         symbol = (ptrSb)symbol_get(symbolTable, leftOp);
-        //symbol2 = (ptrSb)symbol_get(symbolTable,rightOp);
         if (isNumber(rightOp)||isNumber(leftOp)||strcmp(symbol->type, "STR") != 0)
             return LLVMCalBuilder(leftOp, rightOp, getLLVMadd);
         else
@@ -708,6 +854,80 @@ char *genExpr(ptrast root)
             return strName;
         }
     }
+    else if(!strcmp(root->nodetype,"="))
+    {
+        char *dataType;
+        int align;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        rightOp = genExpr(root->left);
+        sprintf(buffer,"%sstore %s %s, %s* %s, align %d\n",Tab,dataType,rightOp,dataType,symbol->serial,align);
+        que_push(FuncBody,buffer);
+
+    }
+    else if(!strcmp(root->nodetype,"/="))
+    {
+        char *dataType;
+        int align;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        rightOp = genExpr(root->left);
+        que_push(FuncBody,getLLVMdiv(dataType,symbol->serial,rightOp));
+        sprintf(buffer,"%sstore %s %%%d, %s* %s, align %d\n",Tab,dataType,tempNum++,dataType,symbol->serial,align);
+        que_push(FuncBody,buffer);
+    }
+    else if(!strcmp(root->nodetype,"*="))
+    {
+        char *dataType;
+        int align;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        rightOp = genExpr(root->left);
+        que_push(FuncBody,getLLVMmul(dataType,symbol->serial,rightOp));
+        sprintf(buffer,"%sstore %s %%%d, %s* %s, align %d\n",Tab,dataType,tempNum++,dataType,symbol->serial,align);
+        que_push(FuncBody,buffer);   
+    }
+    else if(!strcmp(root->nodetype,"+="))
+    {
+        char *dataType;
+        int align;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        rightOp = genExpr(root->left);
+        que_push(FuncBody,getLLVMadd(dataType,symbol->serial,rightOp));
+        sprintf(buffer,"%sstore %s %%%d, %s* %s, align %d\n",Tab,dataType,tempNum++,dataType,symbol->serial,align);
+        que_push(FuncBody,buffer);      
+    }
+    else if(!strcmp(root->nodetype,"-="))
+    {
+        char *dataType;
+        int align;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        rightOp = genExpr(root->left);
+        que_push(FuncBody,getLLVMsub(dataType,symbol->serial,rightOp));
+        sprintf(buffer,"%sstore %s %%%d, %s* %s, align %d\n",Tab,dataType,tempNum++,dataType,symbol->serial,align);
+        que_push(FuncBody,buffer);       
+    }
+    else if(!strcmp(root->nodetype,"%="))
+    {
+
+    }
     else if (!strcmp(root->nodetype,"VariableRef"))
     {
         return root->content;
@@ -717,7 +937,7 @@ char *genExpr(ptrast root)
 void outputLLVM()
 {
     char *fileName = Init();
-    //freopen(fileName, "a+", stdout);
+    freopen(fileName, "a+", stdout);
     produceAst();
     //showAst(astRoot,0);
     genCode(astRoot);
