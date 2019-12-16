@@ -35,6 +35,18 @@ typedef struct HashStack
     ptrHt global;
 } hs , *ptrhs;
 
+typedef struct strRecord
+{
+    char string[300];
+    struct strRecord *next;
+}sr,*ptrSr;
+
+typedef struct strTable 
+{
+    ptrSr *table;
+}st,*ptrSt;
+
+
 /* new an instance of HashTable */
 HashTable *hash_table_new();
 
@@ -66,5 +78,13 @@ void hash_stack_pop(ptrhs SymbolTable);
 int hash_stack_subScope(ptrhs SymbolTable);
 
 ptrhs hash_stack_new();
+
+ptrSt hash_str_table_new();
+
+void hash_str_table_delete(ptrSt sample);
+
+void string_push(ptrSt sample,ptrSr str);
+
+int string_check(ptrSt sample,char *str);
 
 #endif

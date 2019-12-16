@@ -99,7 +99,7 @@ selection_statement: IF '(' expr ')' statement {$$ = newIfNode("IF_Stmt",$3,$5,N
                    ;
 iteration_statement: WHILE '(' expr ')' statement {$$ = newAstNode("WhileStmt",NULL,0,$3,$5);}
                    ;
-jump_statement: RETURN ';' {$$ = NULL;}
+jump_statement: RETURN ';' {$$ = newAstNode("ReturnStmt",NULL,0,NULL,NULL);}
               | RETURN expr ';' {$$ = newAstNode("ReturnStmt",NULL,0,$2,NULL);}
               ;
 print_statement: PRINT ';' {$$ = NULL;}

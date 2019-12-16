@@ -1,34 +1,36 @@
-int a = 33, b, c = 44;
-int bb = 3;
-str aaa = "12345", bbb;
+int aaa = 33, bbb, cccc = 44;
+int bbb = 3;
+str aa;
+str bbbb = "12345";
 
 int main()
 {
 	int a = 1;
 	int b = 1;
-	// a = b*3;
-	// b = a+a;
-	// b = a/b;
-	// a = b+b+b+b;
+	a = b*3;
+	b = a+a;
+	b = a/b;
+	a = b+b+b+b;
 	a /= 1;
 	b *= a;
 	b += b;
 	b -= a+b;
-	// int c = a + b;
-	// int a = 888 + 12;
-	// return 0;
+	a = 888 +12;
+	return 0;
 }
 
 void f(str k)
 {
-	str b = "aaa" ;
+	str b ;
+	b = "aaa";
 	str c = "ccc" ;
-	str d = k;
-	//return c;
-	//return c;
+	str d = b + c;
+	d = k;
 }
 
-void mm(str k)
+
+
+str mm(str k)
 {
 	int a = 1;
 	int b = 1;
@@ -41,10 +43,8 @@ void mm(str k)
 	int ere = 4*2;
 	int ccc = 4-2;
 	int mmmmmmmp = 8%2;
-	//int fkm = -a;
 	int mmp = c%a;
-	//return c;
-	//return c;
+	return k;
 }
 
 

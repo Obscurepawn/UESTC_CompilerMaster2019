@@ -9,6 +9,7 @@
 
 int tabNum = 0;
 extern void tabSpace();
+ptrHt globalSymTable;
 
 /* constructor of sht */
 void init_subTable(ptrSht subTable)
@@ -191,7 +192,7 @@ ptrhs hash_stack_new()
     ptrhs hashStack = malloc(sizeof(hs));
     if(!hashStack)
         return NULL;
-    ptrHt globalSymTable = hash_table_new();
+    globalSymTable = hash_table_new();
     if(!globalSymTable)
         return NULL;
     globalSymTable->last = NULL;
@@ -239,10 +240,71 @@ void  symbol_push(ptrhs SymbolTable,ptrSb symbol)
 {
     if(!symbol||!symbol->name)
         return;
+    if(strstr(symbol->name,".str"))
+        hash_table_put(globalSymTable,symbol->name,symbol,free);
     hash_table_put(SymbolTable->now,symbol->name,symbol,free);
     return;
 }
 
+/* new a HashTable instance */
+ptrSt hash_str_table_new()
+{
+    ptrSt sample = malloc(sizeof(st));
+    if (NULL == sample)
+        return NULL;
+    sample->table = malloc(sizeof(ptrSr) * TABLE_SIZE);
+    if (NULL == sample->table)
+    {
+        free(sample);
+        return NULL;
+    }
+    memset(sample->table, 0, sizeof(ptrSr) * TABLE_SIZE);
+    return sample;
+}
+
+void string_push(ptrSt sample,ptrSr str)
+{
+    if(!str)
+        return;
+    int index = hash_33(str->string);
+    index = index % TABLE_SIZE;
+    ptrSr temp = sample->table[index];
+    ptrSr prep = temp;
+    while(temp)
+    {
+        prep = temp;
+        temp = temp->next;
+    }
+    if(NULL==temp)
+    {
+        if(sample->table[index]==NULL)
+            sample->table[index] = str;
+        else
+            prep = str;
+    }
+    return;
+}
+
+int string_check(ptrSt sample,char *str)
+{
+    int index = hash_33(str);
+    index = index % TABLE_SIZE;
+    ptrSr temp = sample->table[index];
+    while (temp)
+    {
+        if(!strcmp(temp->string,str))
+            return 0;
+        else
+            temp = temp->next;
+    }
+    return 1;
+}
+
+void hash_str_table_delete(ptrSt sample)
+{
+    free(sample->table);
+    free(sample);
+}
 
 
 
