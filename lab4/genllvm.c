@@ -368,7 +368,7 @@ char *getLLVMStrAssign(char *bitType, char *lop, char *rop)
     }
     if (string_check(funcRecord, "malloc"))
     {
-        strcpy(funcRef, "\ndeclare dso_local i64 @malloc(i64) #1\n");
+        strcpy(funcRef, "\ndeclare dso_local i8* @malloc(i64) #1\n");
         que_push(CallFunction, strdup(funcRef));
         addString(funcRecord, "malloc");
     }

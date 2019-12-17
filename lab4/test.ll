@@ -12,7 +12,7 @@ target triple = "x86_64-pc-linux-gnu"
 
 declare dso_local void @free(i8*) #1
 
-declare dso_local i64 @malloc(i64) #1
+declare dso_local i8* @malloc(i64) #1
 
 declare dso_local i64 @strlen(i8*) #2
 
