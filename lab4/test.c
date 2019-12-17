@@ -5,49 +5,49 @@ str bbbb = "12345";
 
 int main()
 {
-	// int a = 1;
-	// int b = 1;
-	// a = b*3;
-	// b = a+a;
-	// b = a/b;
-	// a = b+b+b+b;
-	// a /= 1;
-	// b *= a;
-	// b += b;
-	// b -= a+b;
-	// a = 888 +12;
+	int a = 1;
+	int b = 1;
+	a = b*3;
+	b = a+a;
+	b = a/b;
+	a = b+b+b+b;
+	a /= 1;
+	b *= a;
+	b += b;
+	b -= a+b;
+	a = 888 +12;
 	aa = "ccc";
 	bbbb[2] = aa[0];
 	return 0;
 }
 
-// void f(str k)
-// {
-// 	str b ;
-//     b = "aaa";
-// 	str c = "ccc" ;
-// 	str d = b + c;
-// 	d = k;
-// }
+void f(str k)
+{
+	str b ;
+    b = "aaa";
+	str c = "ccc" ;
+	str d = b + c;
+	d = k;
+}
 
 
 
-// str mm(str k)
-// {
-// 	int a = 1;
-// 	int b = 1;
-// 	a = b*2;
-// 	int c = a + b;
-// 	int mc = c*a;
-// 	int mk = c/a;
-// 	int mmmmp = c-a;
-// 	int kkkkl = 4/2;
-// 	int ere = 4*2;
-// 	int ccc = 4-2;
-// 	int mmmmmmmp = 8%2;
-// 	int mmp = c%a;
-// 	return k;
-// }
+str mm(str k)
+{
+	int a = 1;
+	int b = 1;
+	a = b*2;
+	int c = a + b;
+	int mc = c*a;
+	int mk = c/a;
+	int mmmmp = c-a;
+	int kkkkl = 4/2;
+	int ere = 4*2;
+	int ccc = 4-2;
+	int mmmmmmmp = 8%2;
+	int mmp = c%a;
+	return k;
+}
 
 
 // int func1(int fir, int sec)

@@ -876,7 +876,11 @@ int genVarDec(ptrast root)
                     if (!addSymbol(serial, 0, VarType, symbol->string, VarName))
                         return false;
                     if (strlen(rightValue) > 4)
+                    {
+                        //printf("%s\n",rightValue);                 
                         free(rightValue);
+                        //system("pause");
+                    }
                 }
                 else if (!strcmp(VarType, "INT"))
                 {
@@ -972,7 +976,7 @@ char *genExpr(ptrast root)
         temp = strdup(root->content);
         temp[strlen(temp) - 1] = '\0';
         ++temp;
-        // printf("%s\n",temp);
+        //printf("%s\n",temp);
         if (string_check(stringRecord, temp))
         {
             if (ConstStringNum == 0)
@@ -1018,7 +1022,7 @@ char *genExpr(ptrast root)
                     if (!strcmp(symbol->string, temp))
                     {
                         free(--temp);
-                        return symbol->name;
+                        return strdup(symbol->name);
                     }
                 }
             }
@@ -1095,7 +1099,6 @@ char *genExpr(ptrast root)
             else if (!strcmp(symbol->type, "STR"))
             {
                 que_push(FuncBody, getLLVMStrAssign(dataType, leftOp, rightOp));
-
                 sprintf(buffer, "%sstore %s %%%d, %s* %s, align %d\n", Tab, dataType, tempNum++, dataType, symbol->serial, align);
             }
             que_push(FuncBody, buffer);
@@ -1217,9 +1220,8 @@ char *genExpr(ptrast root)
             sprintf(buffer, "%%%d = getelementptr inbounds i8, i8* %%%d, i64 %s", ++tempNum, tempNum - 1, index);
             que_push(FuncBody, strdup(buffer));
             sprintf(buffer, "%%%d = load i8, i8* %%%d, align 1", ++tempNum, tempNum - 1);
-            que_push(FuncBody, strdup(buffer));
+            que_push(FuncBody, buffer);
             tempNum++;
-            free(buffer);
             ptrSb temSym = malloc(sizeof(sb));
             sprintf(temSym->serial, "%%%d", tempNum - 1);
             sprintf(temSym->name, "%%%d", tempNum - 1);
@@ -1235,9 +1237,9 @@ char *genExpr(ptrast root)
 void outputLLVM()
 {
     char *fileName = Init();
-    //   freopen(fileName, "a+", stdout);
+    freopen(fileName, "a+", stdout);
     produceAst();
-    //  showAst(astRoot,0);
+    //showAst(astRoot,0);
     genCode(astRoot);
     outputQue(*GlobalContext);
     outputQue(*CallFunction);
