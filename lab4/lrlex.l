@@ -21,6 +21,7 @@
 ">=" |
 "<=" |
 "=="                {yylval.save_yytext=strdup(yytext);return CMP;}
+":=" |
 "%=" |
 "+=" |
 "/=" |

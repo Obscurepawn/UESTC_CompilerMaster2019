@@ -29,6 +29,7 @@ int ConstStringNum;    //to record the num of the constant string
 int tempNum = 0;       //to record the num of the temperary variable in a function
 ptrhs symbolTable;     //symbol table
 ptrSt stringRecord;    //record the local string whether has declared
+ptrSt funcRecord;      //record the declared function name,to avoid multy-declaration
 char *Tab = NULL;
 char *CompilerFile = NULL;
 //char *ReturnType = NULL;
@@ -65,6 +66,9 @@ char *getLLVMsub(char *bitType, char *lop, char *rop);
 char *getLLVMmul(char *bitType, char *lop, char *rop);
 char *getLLVMdiv(char *bitType, char *lop, char *rop);
 char *getLLVMstrcat(char *bitType, char *lop, char *rop);
+
+bool addString(ptrSt StringRecord,char *str);
+bool addSymbol(char *serial, int value, char *type, char *string, char *name);
 
 int putEnd();
 
@@ -324,20 +328,69 @@ char *getLLVMserm(char *bitType, char *lop, char *rop)
 
 char *getLLVMstrcat(char *bitType, char *lop, char *rop)
 {
-    static int strcatFlag = 0;
     bitType = "i8*";
     char *funcRef = malloc(1000);
-    if(!strcatFlag)
+    if(string_check(funcRecord,"strcat"))
     {
         strcpy(funcRef,"\ndeclare dso_local i64 @strcat(i8*,i8*) #1\n");
         que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"strcat");
+    }
+    if(string_check(funcRecord,"strlen"))
+    {
         strcpy(funcRef,"\ndeclare dso_local i64 @strlen(i8*) #2\n");
         que_push(CallFunction,strdup(funcRef));
-        strcpy(funcRef,"\ndefine dso_local i8* @Strcat(i8*, i8*) #0 {\r\n\t%3 = alloca i8*, align 8\n\t%4 = alloca i8*, align 8\n\t%5 = alloca i8*, align 8\n\tstore i8* %0, i8** %3, align 8\n\tstore i8* %1, i8** %4, align 8\n\t%6 = load i8*, i8** %3, align 8\n\t%7 = call i64 @strlen(i8* %6) #4\n\t%8 = load i8*, i8** %4, align 8\n\t%9 = call i64 @strlen(i8* %8) #4\n\t%10 = add i64 %7, %9\n\t%11 = call noalias i8* @malloc(i64 %10) #3\n\tstore i8* %11, i8** %5, align 8\n\t%12 = load i8*, i8** %5, align 8\n\t%13 = load i8*, i8** %3, align 8\n\t%14 = call i8* @strcat(i8* %12, i8* %13) #3\n\t%15 = load i8*, i8** %5, align 8\n\t%16 = load i8*, i8** %4, align 8\n\t%17 = call i8* @strcat(i8* %15, i8* %16) #3\n\t%18 = load i8*, i8** %5, align 8\n\tret i8* %18\n}\n\n");
-        que_push(CallFunction,strdup(funcRef));
-        strcatFlag = 1;
+        addString(funcRecord,"strlen");
     }
-    sprintf(funcRef, "@Strcat(i8* %s, i8* %s)", lop, rop);
+    if(string_check(funcRecord,"StrSum"))
+    {
+        strcpy(funcRef,"\ndefine dso_local i8* @StrSum(i8*, i8*) #0 {\r\n\t%3 = alloca i8*, align 8\n\t%4 = alloca i8*, align 8\n\t%5 = alloca i8*, align 8\n\tstore i8* %0, i8** %3, align 8\n\tstore i8* %1, i8** %4, align 8\n\t%6 = load i8*, i8** %3, align 8\n\t%7 = call i64 @strlen(i8* %6) #4\n\t%8 = load i8*, i8** %4, align 8\n\t%9 = call i64 @strlen(i8* %8) #4\n\t%10 = add i64 %7, %9\n\t%11 = call noalias i8* @malloc(i64 %10) #3\n\tstore i8* %11, i8** %5, align 8\n\t%12 = load i8*, i8** %5, align 8\n\t%13 = load i8*, i8** %3, align 8\n\t%14 = call i8* @strcat(i8* %12, i8* %13) #3\n\t%15 = load i8*, i8** %5, align 8\n\t%16 = load i8*, i8** %4, align 8\n\t%17 = call i8* @strcat(i8* %15, i8* %16) #3\n\t%18 = load i8*, i8** %5, align 8\n\tret i8* %18\n}\n\n");
+        que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"StrSum");
+    }
+    sprintf(funcRef, "@StrSum(i8* %s, i8* %s)", lop, rop);
+    return getLLVMcall(bitType, funcRef);
+}
+
+char *getLLVMStrAssign(char *bitType, char *lop,char *rop)
+{
+    bitType = "i8*";
+    ptrSb Rsymbol = symbol_get(symbolTable,rop);
+    ptrSb Lsymbol = symbol_get(symbolTable,lop);
+    char *funcRef = malloc(4096);
+    int InitFlag = 1;
+    int tempFlag = 0;
+    if(string_check(funcRecord,"malloc"))
+    {
+        strcpy(funcRef,"\ndeclare dso_local i64 @malloc(i64) #1\n");
+        que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"malloc");
+    }
+    if(string_check(funcRecord,"strlen"))
+    {
+        strcpy(funcRef,"\ndeclare dso_local i64 @strlen(i8*) #2\n");
+        que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"strlen");
+    }
+    if(string_check(funcRecord,"strcpy"))
+    {
+        strcpy(funcRef,"\ndeclare dso_local i8* @strcpy(i8*, i8*) #1\n");
+        que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"strcpy");
+    }
+    if(string_check(funcRecord,"StrAssign"))
+    {
+        strcpy(funcRef,"\ndefine dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {\n\t%5 = alloca i8*, align 8\n\t%6 = alloca i32, align 4\n\t%7 = alloca i32, align 4\n\t%8 = alloca i8*, align 8\n\t%9 = alloca i8*, align 8\n\tstore i32 %0, i32* %6, align 4\n\tstore i32 %1, i32* %7, align 4\n\tstore i8* %2, i8** %8, align 8\n\tstore i8* %3, i8** %9, align 8\n\t%10 = load i32, i32* %7, align 4\n\t%11 = icmp ne i32 %10, 0\n\tbr i1 %11, label %12, label %19\n\t; <label>:12:                                     ; preds = %4\n\t%13 = load i32, i32* %6, align 4\n\t%14 = icmp ne i32 %13, 0\n\tbr i1 %14, label %15, label %17\n\n\t; <label>:15:                                     ; preds = %12\n\t%16 = load i8*, i8** %8, align 8\n\tcall void @free(i8* %16) #4\n\tbr label %17\n\n\t; <label>:17:                                     ; preds = %15, %12\n\t%18 = load i8*, i8** %9, align 8\n\tstore i8* %18, i8** %5, align 8\n\tbr label %40\n\n\t; <label>:19:                                     ; preds = %4\n\t%20 = load i32, i32* %6, align 4\n\t%21 = icmp ne i32 %20, 0\n\tbr i1 %21, label %26, label %22\n\n\t; <label>:22:                                     ; preds = %19\n\t%23 = load i8*, i8** %9, align 8\n\t%24 = call i64 @strlen(i8* %23) #5\n\t%25 = call noalias i8* @malloc(i64 %24) #4\n\tstore i8* %25, i8** %8, align 8\n\tbr label %35\n\n\t; <label>:26:                                     ; preds = %19\n\t%27 = load i32, i32* %6, align 4\n\t%28 = icmp ne i32 %27, 0\n\tbr i1 %28, label %29, label %34\n\n\t; <label>:29:                                     ; preds = %26\n\n\t%30 = load i8*, i8** %8, align 8\n\n\tcall void @free(i8* %30) #4\n\n\t%31 = load i8*, i8** %9, align 8\n\n\t%32 = call i64 @strlen(i8* %31) #5\n\n\t%33 = call noalias i8* @malloc(i64 %32) #4\n\n\tstore i8* %33, i8** %8, align 8\n\tbr label %34\n\n\t; <label>:34:                                     ; preds = %29, %26\n\tbr label %35\n\n\t; <label>:35:                                     ; preds = %34, %22\n\t%36 = load i8*, i8** %8, align 8\n\t%37 = load i8*, i8** %9, align 8\n\t%38 = call i8* @strcpy(i8* %36, i8* %37) #4\n\t%39 = load i8*, i8** %8, align 8\n\tstore i8* %39, i8** %5, align 8\n\tbr label %40\n\n\t; <label>:40:                                     ; preds = %35, %17\n\t%41 = load i8*, i8** %5, align 8\n\tret i8* %41\n}\n\n");
+        que_push(CallFunction,strdup(funcRef));
+        addString(funcRecord,"StrAssign");
+    }
+    if(!strcmp(Rsymbol->string,"IntermediateResult"))
+        tempFlag = 1;
+    if(!strcmp(Lsymbol->string,"UnInited"))
+        InitFlag = 0;
+    if(strcmp(Rsymbol->serial,"-1"))
+        rop = Rsymbol->serial;
+    sprintf(funcRef, "@StrAssign(i32 %d ,i32 %d,i8* %s, i8* %s)",InitFlag,tempFlag,Lsymbol->serial, rop);
     return getLLVMcall(bitType, funcRef);
 }
 
@@ -421,6 +474,7 @@ char *LLVMCalBuilder(char *leftOp, char *rightOp, char *(*LLVMBuilder)(char *, c
             strcpy(temp2->type, "STR");
         }
         sprintf(temp2->name, "%%%d", tempNum++);
+        strcpy(temp2->string,"IntermediateResult");
         symbol_push(symbolTable, temp2);
         return temp2->name;
     }
@@ -494,6 +548,8 @@ char *Init()
         return NULL;
     if (!(stringRecord = hash_str_table_new()))
         return NULL;
+    if (!(funcRecord = hash_str_table_new()))
+        return NULL;
     tempNum = 1;
     tabNum = 0;
     GlobalFlag = 0;
@@ -543,14 +599,14 @@ bool addSymbol(char *serial, int value, char *type, char *string, char *name)
     return true;
 }
 
-bool addString(ptrSt stringRecord,char *str)
+bool addString(ptrSt StringRecord,char *str)
 {
     ptrSr String = malloc(sizeof(sr));
     if (!String)
         return false;
     String->next = NULL;
     strcpy(String->string,str);
-    string_push(stringRecord,String);
+    string_push(StringRecord,String);
     return true;
 }
 
@@ -708,7 +764,7 @@ int genVarDec(ptrast root)
                 char *bitCode = bitTypeJudge(VarType);
                 int align = alignJudge(bitCode);
                 VarName = root->content;
-                if (!addSymbol("-1", 0, VarType, "\0", VarName))
+                if (!addSymbol("-1", 0, VarType, "UnInited", VarName))
                     return false;
                 if (strcmp(VarType, "STR") != 0)
                     sprintf(Buffer, "@%s = common dso_local global %s 0, align %d\n", VarName, bitCode, align);
@@ -763,7 +819,6 @@ int genVarDec(ptrast root)
             }
             else if (!strcmp("VariableInit", root->nodetype))
             {
-                static int flag = 0;
                 VarName = root->left->content;
                 char *rightValue = genExpr(root->right);    
                 if (!strcmp(VarType, "STR"))
@@ -775,13 +830,17 @@ int genVarDec(ptrast root)
                     que_push(FuncBody,strdup(Buffer));
                     if(rightValue[0] == '.')
                     {
-                        if(!flag)
+                        if(string_check(funcRecord,"malloc"))
                         {
                             sprintf(Buffer,"\ndeclare dso_local noalias i8* @malloc(i64) #1\n");
                             que_push(CallFunction,strdup(Buffer));
+                            addString(funcRecord,"malloc");
+                        }
+                        if(string_check(funcRecord,"strcpy"))
+                        {
                             sprintf(Buffer,"\ndeclare dso_local i8* @strcpy(i8*, i8*) #1\n");
                             que_push(CallFunction,strdup(Buffer));
-                            flag = 1;
+                            addString(funcRecord,"strcpy");
                         }
                         sprintf(Buffer,"%s%%%d = call noalias i8* @malloc(i64 %d) #3\n",Tab,tempNum++,length+1);
                         que_push(FuncBody,strdup(Buffer));
@@ -799,9 +858,14 @@ int genVarDec(ptrast root)
                             Tmp = symbol->name;
                         else 
                             Tmp = symbol->serial;
-                        sprintf(Buffer,"%s%%%d = load i8*, i8** %s, align 8\n",Tab,tempNum++,Tmp);
-                        que_push(FuncBody,strdup(Buffer));
-                        sprintf(Buffer,"%sstore i8* %%%d, i8** %s, align 8\n",Tab,tempNum-1,serial);
+                        if(!strcmp(symbol->string,"IntermediateResult"))
+                            sprintf(Buffer,"%sstore i8* %%%d, i8** %s, align 8\n",Tab,tempNum-2,serial);
+                        else
+                        {
+                            sprintf(Buffer,"%s%%%d = load i8*, i8** %s, align 8\n",Tab,tempNum++,Tmp);
+                            que_push(FuncBody,strdup(Buffer));
+                            sprintf(Buffer,"%sstore i8* %%%d, i8** %s, align 8\n",Tab,tempNum-1,serial);
+                        }
                     }
                     if (!addSymbol(serial, 0, VarType, symbol->string, VarName))
                         return false;
@@ -902,7 +966,7 @@ char *genExpr(ptrast root)
         temp = strdup(root->content);
         temp[strlen(temp)-1] = '\0';
         ++temp;
-        //printf("%s\n",temp);
+       // printf("%s\n",temp);
        if(string_check(stringRecord,temp))
        {
         if (ConstStringNum == 0)
@@ -956,7 +1020,7 @@ char *genExpr(ptrast root)
         if(temp)
             free(--temp);
     }
-    else if(!strcmp(root->nodetype,"="))
+    else if(!strcmp(root->nodetype,":="))
     {
         char *dataType;
         int align;
@@ -964,9 +1028,9 @@ char *genExpr(ptrast root)
         char *buffer = malloc(4096);
         leftOp = root->content;
         rightOp = genExpr(root->left);
+        temSymbol = symbol_get(symbolTable,rightOp);
         if(rightOp[0]!='%'&&!isNumber(rightOp))
         {
-            temSymbol = symbol_get(symbolTable,rightOp);
             if(strcmp(temSymbol->serial,"-1"))
                 rightOp = temSymbol->serial;
             else if(!strcmp(temSymbol->type,"STR"))
@@ -980,12 +1044,51 @@ char *genExpr(ptrast root)
                 sprintf(subBuffer,"getelementptr inbounds ([%d x i8], [%d x i8]* @%s, i32 0, i32 0)",length,length,temSymbol->name);
             }
         }
+        if(!isNumber(rightOp)&&strcmp(temSymbol->string,"IntermediateResult"))
+        {
+            sprintf(buffer,"%s%%%d = load %s, %s* %s, align %d\n",Tab,tempNum,dataType,dataType,rightOp,align);
+            que_push(FuncBody,strdup(buffer));
+            char temBuffer[8];
+            sprintf(temBuffer,"%%%d",tempNum++);
+            rightOp = temBuffer;
+        }
         symbol = symbol_get(symbolTable,leftOp);
         dataType = bitTypeJudge(symbol->type);
         align = alignJudge(dataType);
         sprintf(buffer,"%sstore %s %s, %s* %s, align %d\n",Tab,dataType,rightOp,dataType,symbol->serial,align);
         que_push(FuncBody,buffer);
-
+    }
+    else if(!strcmp(root->nodetype,"="))
+    {
+        char *dataType;
+        int align;
+        ptrSb temSymbol;
+        char *buffer = malloc(4096);
+        leftOp = root->content;
+        rightOp = genExpr(root->left);
+        symbol = symbol_get(symbolTable,leftOp);
+        dataType = bitTypeJudge(symbol->type);
+        align = alignJudge(dataType);
+        temSymbol = symbol_get(symbolTable,rightOp);
+        if(!strcmp(symbol->type,"INT"))
+        {
+           if(!isNumber(rightOp)&&strcmp(temSymbol->string,"IntermediateResult"))
+            {
+            sprintf(buffer,"%s%%%d = load %s, %s* %s, align %d\n",Tab,tempNum,dataType,dataType,rightOp,align);
+            que_push(FuncBody,strdup(buffer));
+            char temBuffer[8];
+            sprintf(temBuffer,"%%%d",tempNum++);
+            rightOp = temBuffer;
+            }
+            sprintf(buffer,"%sstore %s %s, %s* %s, align %d\n",Tab,dataType,rightOp,dataType,symbol->serial,align); 
+        }
+        else if(!strcmp(symbol->type,"STR"))
+        {
+            que_push(FuncBody,getLLVMStrAssign(dataType,leftOp,rightOp));
+            sprintf(buffer,"%sstore %s %%%d, %s* %s, align %d\n",Tab,dataType,tempNum++,dataType,symbol->serial,align);
+        }
+        que_push(FuncBody,buffer);
+        return symbol->serial;
     }
     else if(!strcmp(root->nodetype,"/="))
     {

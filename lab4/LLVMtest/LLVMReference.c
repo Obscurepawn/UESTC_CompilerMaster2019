@@ -12,16 +12,41 @@ char *tteesst()
 	return a;
 }
 
-char *Strcat(char *head,char *tail)
+char *StrAssign(int InitFlag,int tempFlag,char *lvalue,char *rvalue)
 {
-	char *dest = malloc(strlen(head)+strlen(tail));
-	strcat(dest,head);
-	strcat(dest,tail);
-	return dest;
+	if(tempFlag)
+	{
+		if(InitFlag)
+			free(lvalue);
+		return rvalue;
+	}
+	if(!InitFlag)
+		lvalue = malloc(strlen(rvalue));
+	else if(InitFlag)
+	{
+		free(lvalue);
+		lvalue = malloc(strlen(rvalue));
+	}
+	strcpy(lvalue,rvalue);
+	return lvalue;
+}
+
+char *StrSum(char *head,char *tail)
+{
+	char *Dest = malloc(strlen(head)+strlen(tail));
+	strcat(Dest,head);
+	strcat(Dest,tail);
+	return Dest;
 }
 
 int main(int argc,char *argv[])
 {
+	char *a = "aaa";
+	char *b = malloc(4); 
+	b = StrAssign(0,1,b,a);
+	printf("%s\n",b);
+	//b = StrSum(1,&b,a,"ccc");
+	printf("%s\n",b);
 	// static int d = 0;
 	// double x = 0;
 	// int k = 0;
@@ -34,13 +59,13 @@ int main(int argc,char *argv[])
 	// ccccc = kkkkk + bbbbb;
 	// ccccc /= kkkkk;
 	// //int yyyyyy = 1;
-	int oooooo = 888+12;
-	char *b = "ccc";
-	char *c;
-	c = b;
-	char *a;
-	a = tteesst();
-	strcat(a,a);
+	// int oooooo = 888+12;
+	// char *b = "ccc";
+	// char *c;
+	// c = b;
+	// char *a;
+	// a = tteesst();
+	// strcat(a,a);
 	// char *b = "bbb";
 	// char *c = (char*)malloc(strlen(a)+strlen(b));
 	// strcat(c,a);
@@ -56,9 +81,9 @@ int main(int argc,char *argv[])
 // 	return 0;
 // }
 
-// char *TEST(char *temp)
-// {
-// 	char *kkk = temp;
-// 	char *aaa = kkk;
-// 	return kkk;
-// }
+char *TEST(char *temp)
+{
+	char *kkk = temp;
+	char *aaa = kkk;
+	return kkk;
+}

@@ -14,15 +14,92 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.2 = private unnamed_addr constant [4 x i8] c"ccc\00", align 1
 
 
-declare dso_local noalias i8* @malloc(i64) #1
-
-declare dso_local i8* @strcpy(i8*, i8*) #1
-
-declare dso_local i64 @strcat(i8*,i8*) #1
+declare dso_local i64 @malloc(i64) #1
 
 declare dso_local i64 @strlen(i8*) #2
 
-define dso_local i8* @Strcat(i8*, i8*) #0 {
+declare dso_local i8* @strcpy(i8*, i8*) #1
+
+define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
+	%5 = alloca i8*, align 8
+	%6 = alloca i32, align 4
+	%7 = alloca i32, align 4
+	%8 = alloca i8*, align 8
+	%9 = alloca i8*, align 8
+	store i32 %0, i32* %6, align 4
+	store i32 %1, i32* %7, align 4
+	store i8* %2, i8** %8, align 8
+	store i8* %3, i8** %9, align 8
+	%10 = load i32, i32* %7, align 4
+	%11 = icmp ne i32 %10, 0
+	br i1 %11, label %12, label %19
+	; <label>:12:                                     ; preds = %4
+	%13 = load i32, i32* %6, align 4
+	%14 = icmp ne i32 %13, 0
+	br i1 %14, label %15, label %17
+
+	; <label>:15:                                     ; preds = %12
+	%16 = load i8*, i8** %8, align 8
+	call void @free(i8* %16) #4
+	br label %17
+
+	; <label>:17:                                     ; preds = %15, %12
+	%18 = load i8*, i8** %9, align 8
+	store i8* %18, i8** %5, align 8
+	br label %40
+
+	; <label>:19:                                     ; preds = %4
+	%20 = load i32, i32* %6, align 4
+	%21 = icmp ne i32 %20, 0
+	br i1 %21, label %26, label %22
+
+	; <label>:22:                                     ; preds = %19
+	%23 = load i8*, i8** %9, align 8
+	%24 = call i64 @strlen(i8* %23) #5
+	%25 = call noalias i8* @malloc(i64 %24) #4
+	store i8* %25, i8** %8, align 8
+	br label %35
+
+	; <label>:26:                                     ; preds = %19
+	%27 = load i32, i32* %6, align 4
+	%28 = icmp ne i32 %27, 0
+	br i1 %28, label %29, label %34
+
+	; <label>:29:                                     ; preds = %26
+
+	%30 = load i8*, i8** %8, align 8
+
+	call void @free(i8* %30) #4
+
+	%31 = load i8*, i8** %9, align 8
+
+	%32 = call i64 @strlen(i8* %31) #5
+
+	%33 = call noalias i8* @malloc(i64 %32) #4
+
+	store i8* %33, i8** %8, align 8
+	br label %34
+
+	; <label>:34:                                     ; preds = %29, %26
+	br label %35
+
+	; <label>:35:                                     ; preds = %34, %22
+	%36 = load i8*, i8** %8, align 8
+	%37 = load i8*, i8** %9, align 8
+	%38 = call i8* @strcpy(i8* %36, i8* %37) #4
+	%39 = load i8*, i8** %8, align 8
+	store i8* %39, i8** %5, align 8
+	br label %40
+
+	; <label>:40:                                     ; preds = %35, %17
+	%41 = load i8*, i8** %5, align 8
+	ret i8* %41
+}
+
+
+declare dso_local i64 @strcat(i8*,i8*) #1
+
+define dso_local i8* @StrSum(i8*, i8*) #0 {
 	%3 = alloca i8*, align 8
 	%4 = alloca i8*, align 8
 	%5 = alloca i8*, align 8
@@ -100,17 +177,18 @@ define dso_local void @f(i8*) #0 {
 	%2 = alloca i8*, align 8
 	store i8* %0, i8** %2, align 8
 	%3 = alloca i8*, align 8
-	store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), i8** %3, align 8
-	%4 = alloca i8*, align 8
-	%5 = call noalias i8* @malloc(i64 4) #3
-	store i8* %5, i8** %4, align 8
-	%6 = load i8*, i8** %4, align 8
-	%7 = call i8* @strcpy(i8* %6, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0)) #3
-	%8 = call i8* @Strcat(i8* %3, i8* %4)
-	%9 = alloca i8*, align 8
-	%10 = load i8*, i8** %8, align 8
-	store i8* %10, i8** %9, align 8
-	store i8* %2, i8** %9, align 8
+	%4 = call i8* @StrAssign(i32 1 ,i32 0,i8* %3, i8* .str.1)
+	store i8* %4, i8** %3, align 8
+	%5 = alloca i8*, align 8
+	%6 = call noalias i8* @malloc(i64 4) #3
+	store i8* %6, i8** %5, align 8
+	%7 = load i8*, i8** %5, align 8
+	%8 = call i8* @strcpy(i8* %7, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0)) #3
+	%9 = call i8* @StrSum(i8* %3, i8* %5)
+	%10 = alloca i8*, align 8
+	store i8* %9, i8** %10, align 8
+	%11 = call i8* @StrAssign(i32 1 ,i32 0,i8* %10, i8* %2)
+	store i8* %11, i8** %10, align 8
 }
 
 define dso_local i8* @mm(i8*) #0 {	

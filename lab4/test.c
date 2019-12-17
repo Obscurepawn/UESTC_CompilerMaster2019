@@ -22,7 +22,7 @@ int main()
 void f(str k)
 {
 	str b ;
-	b = "aaa";
+    b = "aaa";
 	str c = "ccc" ;
 	str d = b + c;
 	d = k;
@@ -39,7 +39,7 @@ str mm(str k)
 	int mc = c*a;
 	int mk = c/a;
 	int mmmmp = c-a;
-	int kkkkl = 4/2;
+	int kkkkl = 4/2;`
 	int ere = 4*2;
 	int ccc = 4-2;
 	int mmmmmmmp = 8%2;

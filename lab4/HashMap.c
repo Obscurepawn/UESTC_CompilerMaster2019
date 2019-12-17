@@ -165,7 +165,6 @@ void *hash_table_get(HashTable *ht, char *key)
 void hash_table_rm(HashTable *ht, char *key)
 {
     int i = hash_33(key) % TABLE_SIZE;
-
     ptrSht p = ht->table[i];
     ptrSht prep = p;
     while (p)
@@ -266,7 +265,7 @@ void string_push(ptrSt sample,ptrSr str)
 {
     if(!str)
         return;
-    int index = hash_33(str->string);
+    int index = abs(hash_33(str->string));
     index = index % TABLE_SIZE;
     ptrSr temp = sample->table[index];
     ptrSr prep = temp;
@@ -288,7 +287,8 @@ void string_push(ptrSt sample,ptrSr str)
 int string_check(ptrSt sample,char *str)
 {
     int index = hash_33(str);
-    index = index % TABLE_SIZE;
+    index = abs(index % TABLE_SIZE);
+    //printf("%d\n",index);
     ptrSr temp = sample->table[index];
     while (temp)
     {
