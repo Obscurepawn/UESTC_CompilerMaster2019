@@ -139,28 +139,37 @@ define dso_local i32 @main(i32, i8**) #0 {
   %6 = alloca i8*, align 8
   %7 = alloca i8*, align 8
   %8 = alloca i8*, align 8
+  %9 = alloca i32, align 4
+  %10 = alloca i32, align 4
+  %11 = alloca i32, align 4
   store i32 0, i32* %3, align 4
   store i32 %0, i32* %4, align 4
   store i8** %1, i8*** %5, align 8
   store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0), i8** %6, align 8
-  %9 = call noalias i8* @malloc(i64 4) #3
-  store i8* %9, i8** %7, align 8
-  %10 = load i8*, i8** %7, align 8
-  %11 = load i8*, i8** %6, align 8
-  %12 = call i8* @StrAssign(i32 1, i32 0, i8* %10, i8* %11)
+  %12 = call noalias i8* @malloc(i64 4) #3
   store i8* %12, i8** %7, align 8
-  %13 = call noalias i8* @malloc(i64 100) #3
-  store i8* %13, i8** %8, align 8
-  %14 = load i8*, i8** %8, align 8
-  %15 = load i8*, i8** %6, align 8
-  %16 = call i8* @StrAssign(i32 1, i32 0, i8* %14, i8* %15)
+  %13 = load i8*, i8** %7, align 8
+  %14 = load i8*, i8** %6, align 8
+  %15 = call i8* @StrAssign(i32 1, i32 0, i8* %13, i8* %14)
+  store i8* %15, i8** %7, align 8
+  %16 = call noalias i8* @malloc(i64 100) #3
   store i8* %16, i8** %8, align 8
-  %17 = load i8*, i8** %7, align 8
-  %18 = getelementptr inbounds i8, i8* %17, i64 0
-  %19 = load i8, i8* %18, align 1
-  %20 = load i8*, i8** %8, align 8
-  %21 = getelementptr inbounds i8, i8* %20, i64 2
-  store i8 %19, i8* %21, align 1
+  %17 = load i8*, i8** %8, align 8
+  %18 = load i8*, i8** %6, align 8
+  %19 = call i8* @StrAssign(i32 1, i32 0, i8* %17, i8* %18)
+  store i8* %19, i8** %8, align 8
+  %20 = load i8*, i8** %7, align 8
+  %21 = getelementptr inbounds i8, i8* %20, i64 0
+  %22 = load i8, i8* %21, align 1
+  %23 = load i8*, i8** %8, align 8
+  %24 = getelementptr inbounds i8, i8* %23, i64 2
+  store i8 %22, i8* %24, align 1
+  store i32 9, i32* %9, align 4
+  store i32 1, i32* %10, align 4
+  %25 = load i32, i32* %9, align 4
+  %26 = load i32, i32* %10, align 4
+  %27 = sdiv i32 %25, %26
+  store i32 %27, i32* %11, align 4
   ret i32 8
 }
 

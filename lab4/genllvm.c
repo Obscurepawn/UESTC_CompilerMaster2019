@@ -285,7 +285,7 @@ char *getLLVMdiv(char *bitType, char *lop, char *rop)
         return divBuffer;
     }
     else
-        sprintf(div, "%s%%%d = sdiv nsw %s %s, %s\n", Tab, tempNum, bitType, lBuffer, rBuffer);
+        sprintf(div, "%s%%%d = sdiv %s %s, %s\n", Tab, tempNum, bitType, lBuffer, rBuffer);
     return div;
 }
 

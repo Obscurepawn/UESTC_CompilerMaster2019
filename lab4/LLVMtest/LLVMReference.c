@@ -47,6 +47,9 @@ int main(int argc,char *argv[])
 	char *c = malloc(100);
 	c = StrAssign(1,0,c,a);
 	c[2] = b[0];
+	int aaaaaa = 9;
+	int bbbbbb = 1;
+	int cccccc = aaaaaa/bbbbbb;
 	//printf("%s\n",b);
 	//b = StrSum(1,&b,a,"ccc");
 	//printf("%s\n",b);

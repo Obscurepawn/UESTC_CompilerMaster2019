@@ -95,7 +95,7 @@ define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
 }
 
 
-declare dso_local i64 @strcat(i8*,i8*) #1
+declare dso_local i8* @strcat(i8*,i8*) #1
 
 define dso_local i8* @StrSum(i8*, i8*) #0 {
 	%3 = alloca i8*, align 8
