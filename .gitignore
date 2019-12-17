@@ -5,3 +5,4 @@
 *.tab.o
 example
 *.bc
+*.ll

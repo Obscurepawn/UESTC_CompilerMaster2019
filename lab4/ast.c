@@ -79,6 +79,7 @@ void DecDefPrint(int depth, ptrast root, char *content_title)
 	printf("%s:%s\n", content_title, root->content);
 }
 
+
 void showAst(ptrast root, int depth)
 {
 	if (root == NULL)
@@ -91,7 +92,11 @@ void showAst(ptrast root, int depth)
 		else if (!strcmp(root->nodetype, "FunctionDef"))
 			DecDefPrint(depth, root, "ReturnType");
 		else if (checkOperator(root) != -1)
+		{
 			printf("Operator:%s\n", root->nodetype);
+			produceSpace(depth+1);
+			printf("lvalue:%s\n",root->content);
+		}
 		else if (!strcmp(root->nodetype, "VariableDec"))
 			DecDefPrint(depth, root, "VariableType");
 		else if (!strcmp(root->nodetype, "IF_Stmt"))
@@ -128,7 +133,7 @@ void freeAst(ptrast root)
 {
 	if (!root)
 		return;
-	if(!strcmp(root->nodetype,"IF_Stmt"))
+	if (!strcmp(root->nodetype, "IF_Stmt"))
 	{
 		ptr_if_statement temp = (ptr_if_statement)root;
 		freeAst(temp->next);

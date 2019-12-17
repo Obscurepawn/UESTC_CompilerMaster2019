@@ -5,7 +5,7 @@
 
 #define TABLE_SIZE (1024 * 1024)
 #define MAX_NAME 255
-#define show_symbol(p) printf("serial:%s,value:%d,string:%s,name:%s,type:%s\n",p->serial,p->value,p->string,p->name,p->type)
+#define show_symbol(p) printf("serial:%s,value:%d,string:%s,name:%s,type:%s\n", p->serial, p->value, p->string, p->name, p->type)
 
 int tabNum = 0;
 extern void tabSpace();
@@ -189,10 +189,10 @@ void hash_table_rm(HashTable *ht, char *key)
 ptrhs hash_stack_new()
 {
     ptrhs hashStack = malloc(sizeof(hs));
-    if(!hashStack)
+    if (!hashStack)
         return NULL;
     globalSymTable = hash_table_new();
-    if(!globalSymTable)
+    if (!globalSymTable)
         return NULL;
     globalSymTable->last = NULL;
     hashStack->global = globalSymTable;
@@ -203,10 +203,10 @@ ptrhs hash_stack_new()
 int hash_stack_subScope(ptrhs SymbolTable)
 {
     ptrHt subScopeSymTable = hash_table_new();
-    if(!subScopeSymTable)
+    if (!subScopeSymTable)
         return -1;
     subScopeSymTable->last = SymbolTable->now;
-    SymbolTable->now = subScopeSymTable;   
+    SymbolTable->now = subScopeSymTable;
     tabNum++;
     tabSpace();
     return 0;
@@ -221,27 +221,27 @@ void hash_stack_pop(ptrhs SymbolTable)
     tabSpace();
 }
 
-void* symbol_get(ptrhs SymbolTable,char *key)
+void *symbol_get(ptrhs SymbolTable, char *key)
 {
     ptrHt temp = SymbolTable->now;
     ptrSb symbol;
     while (temp)
     {
-        if(symbol = hash_table_get(temp,key))
+        if (symbol = hash_table_get(temp, key))
             return symbol;
-        else 
+        else
             temp = temp->last;
     }
     return NULL;
 }
 
-void  symbol_push(ptrhs SymbolTable,ptrSb symbol)
+void symbol_push(ptrhs SymbolTable, ptrSb symbol)
 {
-    if(!symbol||!symbol->name)
+    if (!symbol || !symbol->name)
         return;
-    if(strstr(symbol->name,".str"))
-        hash_table_put(globalSymTable,symbol->name,symbol,free);
-    hash_table_put(SymbolTable->now,symbol->name,symbol,free);
+    if (strstr(symbol->name, ".str"))
+        hash_table_put(globalSymTable, symbol->name, symbol, free);
+    hash_table_put(SymbolTable->now, symbol->name, symbol, free);
     return;
 }
 
@@ -261,22 +261,22 @@ ptrSt hash_str_table_new()
     return sample;
 }
 
-void string_push(ptrSt sample,ptrSr str)
+void string_push(ptrSt sample, ptrSr str)
 {
-    if(!str)
+    if (!str)
         return;
     int index = abs(hash_33(str->string));
     index = index % TABLE_SIZE;
     ptrSr temp = sample->table[index];
     ptrSr prep = temp;
-    while(temp)
+    while (temp)
     {
         prep = temp;
         temp = temp->next;
     }
-    if(NULL==temp)
+    if (NULL == temp)
     {
-        if(sample->table[index]==NULL)
+        if (sample->table[index] == NULL)
             sample->table[index] = str;
         else
             prep = str;
@@ -284,7 +284,7 @@ void string_push(ptrSt sample,ptrSr str)
     return;
 }
 
-int string_check(ptrSt sample,char *str)
+int string_check(ptrSt sample, char *str)
 {
     int index = hash_33(str);
     index = abs(index % TABLE_SIZE);
@@ -292,7 +292,7 @@ int string_check(ptrSt sample,char *str)
     ptrSr temp = sample->table[index];
     while (temp)
     {
-        if(!strcmp(temp->string,str))
+        if (!strcmp(temp->string, str))
             return 0;
         else
             temp = temp->next;
@@ -305,8 +305,6 @@ void hash_str_table_delete(ptrSt sample)
     free(sample->table);
     free(sample);
 }
-
-
 
 // // 要放入哈希表中的结构体
 // struct Student

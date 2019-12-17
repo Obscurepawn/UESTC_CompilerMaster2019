@@ -26,26 +26,25 @@ typedef struct SubHashTable
 typedef struct HashTable
 {
     sht **table;
-    struct  HashTable *last;
+    struct HashTable *last;
 } ht, *ptrHt;
 
 typedef struct HashStack
 {
     ptrHt now;
     ptrHt global;
-} hs , *ptrhs;
+} hs, *ptrhs;
 
 typedef struct strRecord
 {
     char string[300];
     struct strRecord *next;
-}sr,*ptrSr;
+} sr, *ptrSr;
 
-typedef struct strTable 
+typedef struct strTable
 {
     ptrSr *table;
-}st,*ptrSt;
-
+} st, *ptrSt;
 
 /* new an instance of HashTable */
 HashTable *hash_table_new();
@@ -69,9 +68,9 @@ void *hash_table_get(HashTable *ht, char *key);
 /* remove a value indexed by key */
 void hash_table_rm(HashTable *ht, char *key);
 
-void  symbol_push(ptrhs SymbolTable,ptrSb symbol);
+void symbol_push(ptrhs SymbolTable, ptrSb symbol);
 
-void* symbol_get(ptrhs SymbolTable,char *key);
+void *symbol_get(ptrhs SymbolTable, char *key);
 
 void hash_stack_pop(ptrhs SymbolTable);
 
@@ -83,8 +82,8 @@ ptrSt hash_str_table_new();
 
 void hash_str_table_delete(ptrSt sample);
 
-void string_push(ptrSt sample,ptrSr str);
+void string_push(ptrSt sample, ptrSr str);
 
-int string_check(ptrSt sample,char *str);
+int string_check(ptrSt sample, char *str);
 
 #endif

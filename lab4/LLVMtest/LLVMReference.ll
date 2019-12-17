@@ -7,16 +7,15 @@ target triple = "x86_64-pc-linux-gnu"
 @v = dso_local global i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), align 8
 @.str.1 = private unnamed_addr constant [7 x i8] c"kkkkkk\00", align 1
 @.str.2 = private unnamed_addr constant [4 x i8] c"aaa\00", align 1
-@.str.3 = private unnamed_addr constant [4 x i8] c"%s\0A\00", align 1
 @e = common dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i8* @tteesst() #0 {
   %1 = alloca i8*, align 8
-  %2 = call noalias i8* @malloc(i64 100) #4
+  %2 = call noalias i8* @malloc(i64 100) #3
   store i8* %2, i8** %1, align 8
   %3 = load i8*, i8** %1, align 8
-  %4 = call i8* @strcpy(i8* %3, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.1, i32 0, i32 0)) #4
+  %4 = call i8* @strcpy(i8* %3, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.1, i32 0, i32 0)) #3
   %5 = load i8*, i8** %1, align 8
   ret i8* %5
 }
@@ -49,7 +48,7 @@ define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
 
 ; <label>:15:                                     ; preds = %12
   %16 = load i8*, i8** %8, align 8
-  call void @free(i8* %16) #4
+  call void @free(i8* %16) #3
   br label %17
 
 ; <label>:17:                                     ; preds = %15, %12
@@ -64,8 +63,8 @@ define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
 
 ; <label>:22:                                     ; preds = %19
   %23 = load i8*, i8** %9, align 8
-  %24 = call i64 @strlen(i8* %23) #5
-  %25 = call noalias i8* @malloc(i64 %24) #4
+  %24 = call i64 @strlen(i8* %23) #4
+  %25 = call noalias i8* @malloc(i64 %24) #3
   store i8* %25, i8** %8, align 8
   br label %35
 
@@ -76,10 +75,10 @@ define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
 
 ; <label>:29:                                     ; preds = %26
   %30 = load i8*, i8** %8, align 8
-  call void @free(i8* %30) #4
+  call void @free(i8* %30) #3
   %31 = load i8*, i8** %9, align 8
-  %32 = call i64 @strlen(i8* %31) #5
-  %33 = call noalias i8* @malloc(i64 %32) #4
+  %32 = call i64 @strlen(i8* %31) #4
+  %33 = call noalias i8* @malloc(i64 %32) #3
   store i8* %33, i8** %8, align 8
   br label %34
 
@@ -89,7 +88,7 @@ define dso_local i8* @StrAssign(i32, i32, i8*, i8*) #0 {
 ; <label>:35:                                     ; preds = %34, %22
   %36 = load i8*, i8** %8, align 8
   %37 = load i8*, i8** %9, align 8
-  %38 = call i8* @strcpy(i8* %36, i8* %37) #4
+  %38 = call i8* @strcpy(i8* %36, i8* %37) #3
   %39 = load i8*, i8** %8, align 8
   store i8* %39, i8** %5, align 8
   br label %40
@@ -113,18 +112,18 @@ define dso_local i8* @StrSum(i8*, i8*) #0 {
   store i8* %0, i8** %3, align 8
   store i8* %1, i8** %4, align 8
   %6 = load i8*, i8** %3, align 8
-  %7 = call i64 @strlen(i8* %6) #5
+  %7 = call i64 @strlen(i8* %6) #4
   %8 = load i8*, i8** %4, align 8
-  %9 = call i64 @strlen(i8* %8) #5
+  %9 = call i64 @strlen(i8* %8) #4
   %10 = add i64 %7, %9
-  %11 = call noalias i8* @malloc(i64 %10) #4
+  %11 = call noalias i8* @malloc(i64 %10) #3
   store i8* %11, i8** %5, align 8
   %12 = load i8*, i8** %5, align 8
   %13 = load i8*, i8** %3, align 8
-  %14 = call i8* @strcat(i8* %12, i8* %13) #4
+  %14 = call i8* @strcat(i8* %12, i8* %13) #3
   %15 = load i8*, i8** %5, align 8
   %16 = load i8*, i8** %4, align 8
-  %17 = call i8* @strcat(i8* %15, i8* %16) #4
+  %17 = call i8* @strcat(i8* %15, i8* %16) #3
   %18 = load i8*, i8** %5, align 8
   ret i8* %18
 }
@@ -139,24 +138,31 @@ define dso_local i32 @main(i32, i8**) #0 {
   %5 = alloca i8**, align 8
   %6 = alloca i8*, align 8
   %7 = alloca i8*, align 8
+  %8 = alloca i8*, align 8
   store i32 0, i32* %3, align 4
   store i32 %0, i32* %4, align 4
   store i8** %1, i8*** %5, align 8
   store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.2, i32 0, i32 0), i8** %6, align 8
-  %8 = call noalias i8* @malloc(i64 4) #4
-  store i8* %8, i8** %7, align 8
-  %9 = load i8*, i8** %7, align 8
-  %10 = load i8*, i8** %6, align 8
-  %11 = call i8* @StrAssign(i32 0, i32 1, i8* %9, i8* %10)
-  store i8* %11, i8** %7, align 8
-  %12 = load i8*, i8** %7, align 8
-  %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* %12)
-  %14 = load i8*, i8** %7, align 8
-  %15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* %14)
+  %9 = call noalias i8* @malloc(i64 4) #3
+  store i8* %9, i8** %7, align 8
+  %10 = load i8*, i8** %7, align 8
+  %11 = load i8*, i8** %6, align 8
+  %12 = call i8* @StrAssign(i32 1, i32 0, i8* %10, i8* %11)
+  store i8* %12, i8** %7, align 8
+  %13 = call noalias i8* @malloc(i64 100) #3
+  store i8* %13, i8** %8, align 8
+  %14 = load i8*, i8** %8, align 8
+  %15 = load i8*, i8** %6, align 8
+  %16 = call i8* @StrAssign(i32 1, i32 0, i8* %14, i8* %15)
+  store i8* %16, i8** %8, align 8
+  %17 = load i8*, i8** %7, align 8
+  %18 = getelementptr inbounds i8, i8* %17, i64 0
+  %19 = load i8, i8* %18, align 1
+  %20 = load i8*, i8** %8, align 8
+  %21 = getelementptr inbounds i8, i8* %20, i64 2
+  store i8 %19, i8* %21, align 1
   ret i32 8
 }
-
-declare dso_local i32 @printf(i8*, ...) #3
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i8* @TEST(i8*) #0 {
@@ -175,9 +181,8 @@ define dso_local i8* @TEST(i8*) #0 {
 attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { nounwind readonly "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind }
-attributes #5 = { nounwind readonly }
+attributes #3 = { nounwind }
+attributes #4 = { nounwind readonly }
 
 !llvm.module.flags = !{!0}
 !llvm.ident = !{!1}

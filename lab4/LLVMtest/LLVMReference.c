@@ -43,10 +43,13 @@ int main(int argc,char *argv[])
 {
 	char *a = "aaa";
 	char *b = malloc(4); 
-	b = StrAssign(0,1,b,a);
-	printf("%s\n",b);
+	b = StrAssign(1,0,b,a);
+	char *c = malloc(100);
+	c = StrAssign(1,0,c,a);
+	c[2] = b[0];
+	//printf("%s\n",b);
 	//b = StrSum(1,&b,a,"ccc");
-	printf("%s\n",b);
+	//printf("%s\n",b);
 	// static int d = 0;
 	// double x = 0;
 	// int k = 0;

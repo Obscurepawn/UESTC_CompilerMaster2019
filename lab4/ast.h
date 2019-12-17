@@ -42,7 +42,6 @@ int checkOperator(ptrast root);
 void produceSpace(int depth);
 void DecDefPrint(int depth, ptrast root, char *content_title);
 
-
 /**interface to the lexer**/
 extern int yylineno;
 extern char *yytext;
@@ -56,6 +55,5 @@ int yyparse();
 
 /**interface to the genLLVM.c**/
 void init();
-
 
 #endif
