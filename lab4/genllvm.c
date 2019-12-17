@@ -332,7 +332,7 @@ char *getLLVMstrcat(char *bitType, char *lop, char *rop)
     char *funcRef = malloc(1000);
     if (string_check(funcRecord, "strcat"))
     {
-        strcpy(funcRef, "\ndeclare dso_local i64 @strcat(i8*,i8*) #1\n");
+        strcpy(funcRef, "\ndeclare dso_local i8* @strcat(i8*,i8*) #1\n");
         que_push(CallFunction, strdup(funcRef));
         addString(funcRecord, "strcat");
     }
