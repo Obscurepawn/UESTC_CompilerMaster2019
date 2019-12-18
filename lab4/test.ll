@@ -137,7 +137,7 @@ define dso_local i32 @main() #0 {
 	store i32 %8, i32* %3, align 4
 	%9 = load i32, i32* %2, align 4
 	%10 = load i32, i32* %3, align 4
-	%11 = sdiv nsw i32 %9, %10
+	%11 = sdiv i32 %9, %10
 	store i32 %11, i32* %3, align 4
 	%12 = load i32, i32* %3, align 4
 	%13 = load i32, i32* %3, align 4
@@ -150,7 +150,7 @@ define dso_local i32 @main() #0 {
 	%20 = add nsw i32 %18, %19
 	store i32 %20, i32* %2, align 4
 	%21 = load i32, i32* %2, align 4
-	%22 = sdiv nsw i32 %21, 1
+	%22 = sdiv i32 %21, 1
 	store i32 %22, i32* %2, align 4
 	%23 = load i32, i32* %3, align 4
 	%24 = load i32, i32* a, align 4
@@ -168,8 +168,8 @@ define dso_local i32 @main() #0 {
 	%34 = sub nsw i32 %32, %33
 	store i32 %34, i32* %3, align 4
 	store i32 900, i32* %2, align 4
-	%35 = call i8* @StrAssign(i32 0 ,i32 0,i8* -1, i8* .str.1)
-	store i8* %35, i8** -1, align 8
+	%35 = call i8* @StrAssign(i32 0 ,i32 0,i8* @aa, i8* @.str.1)
+	store i8* %35, i8** @aa, align 8
 	ret i32 0
 }
 
@@ -177,7 +177,7 @@ define dso_local void @f(i8*) #0 {
 	%2 = alloca i8*, align 8
 	store i8* %0, i8** %2, align 8
 	%3 = alloca i8*, align 8
-	%4 = call i8* @StrAssign(i32 1 ,i32 0,i8* %3, i8* .str.2)
+	%4 = call i8* @StrAssign(i32 1 ,i32 0,i8* %3, i8* @.str.2)
 	store i8* %4, i8** %3, align 8
 	%5 = alloca i8*, align 8
 	%6 = call noalias i8* @malloc(i64 4) #3
@@ -213,7 +213,7 @@ define dso_local i8* @mm(i8*) #0 {
 	store i32 %13, i32* %14, align 4
 	%15 = load i32, i32* %10, align 4
 	%16 = load i32, i32* %3, align 4
-	%17 = sdiv nsw i32 %15, %16
+	%17 = sdiv i32 %15, %16
 	%18 = alloca i32, align 4
 	store i32 %17, i32* %18, align 4
 	%19 = load i32, i32* %10, align 4

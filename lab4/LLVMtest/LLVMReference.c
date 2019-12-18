@@ -50,6 +50,9 @@ int main(int argc,char *argv[])
 	int aaaaaa = 9;
 	int bbbbbb = 1;
 	int cccccc = aaaaaa/bbbbbb;
+	cccccc = aaaaaa+bbbbbb;
+	cccccc = aaaaaa*bbbbbb;
+	cccccc = aaaaaa-bbbbbb;
 	//printf("%s\n",b);
 	//b = StrSum(1,&b,a,"ccc");
 	//printf("%s\n",b);

@@ -170,6 +170,18 @@ define dso_local i32 @main(i32, i8**) #0 {
   %26 = load i32, i32* %10, align 4
   %27 = sdiv i32 %25, %26
   store i32 %27, i32* %11, align 4
+  %28 = load i32, i32* %9, align 4
+  %29 = load i32, i32* %10, align 4
+  %30 = add nsw i32 %28, %29
+  store i32 %30, i32* %11, align 4
+  %31 = load i32, i32* %9, align 4
+  %32 = load i32, i32* %10, align 4
+  %33 = mul nsw i32 %31, %32
+  store i32 %33, i32* %11, align 4
+  %34 = load i32, i32* %9, align 4
+  %35 = load i32, i32* %10, align 4
+  %36 = sub nsw i32 %34, %35
+  store i32 %36, i32* %11, align 4
   ret i32 8
 }
 

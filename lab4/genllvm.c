@@ -360,6 +360,9 @@ char *getLLVMStrAssign(char *bitType, char *lop, char *rop)
     char *funcRef = malloc(4096);
     int InitFlag = 1;
     int tempFlag = 0;
+    char *Lop;
+    char buffer1[10] = "@";
+    char buffer2[10] = "@";
     if (string_check(funcRecord, "free"))
     {
         strcpy(funcRef, "\ndeclare dso_local void @free(i8*) #1\n");
@@ -396,7 +399,20 @@ char *getLLVMStrAssign(char *bitType, char *lop, char *rop)
         InitFlag = 0;
     if (strcmp(Rsymbol->serial, "-1"))
         rop = Rsymbol->serial;
-    sprintf(funcRef, "@StrAssign(i32 %d ,i32 %d,i8* %s, i8* %s)", InitFlag, tempFlag, Lsymbol->serial, rop);
+    if (strstr(rop,".str"))
+    {
+        strcat(buffer1,rop);
+        rop = buffer1;
+    }
+    Lop = Lsymbol->serial;
+    if (!strcmp(Lop,"-1"))
+    {
+        Lop = Lsymbol->name;
+        strcat(buffer2,Lop);
+        Lop = buffer2;
+    }
+    //printf("%s\n",Lop);
+    sprintf(funcRef, "@StrAssign(i32 %d ,i32 %d,i8* %s, i8* %s)", InitFlag, tempFlag, Lop, rop);
     return getLLVMcall(bitType, funcRef);
 }
 
@@ -1098,8 +1114,15 @@ char *genExpr(ptrast root)
             }
             else if (!strcmp(symbol->type, "STR"))
             {
+                char BUFFER[10]="@";
+                char *TEMP = symbol->serial;
                 que_push(FuncBody, getLLVMStrAssign(dataType, leftOp, rightOp));
-                sprintf(buffer, "%sstore %s %%%d, %s* %s, align %d\n", Tab, dataType, tempNum++, dataType, symbol->serial, align);
+                if(!strcmp(symbol->serial,"-1"))
+                {
+                    strcat(BUFFER,symbol->name);
+                    TEMP = BUFFER;
+                }
+                sprintf(buffer, "%sstore %s %%%d, %s* %s, align %d\n", Tab, dataType, tempNum++, dataType, TEMP, align);
             }
             que_push(FuncBody, buffer);
             return symbol->serial;
