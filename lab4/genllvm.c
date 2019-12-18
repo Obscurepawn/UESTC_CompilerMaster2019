@@ -399,16 +399,16 @@ char *getLLVMStrAssign(char *bitType, char *lop, char *rop)
         InitFlag = 0;
     if (strcmp(Rsymbol->serial, "-1"))
         rop = Rsymbol->serial;
-    if (strstr(rop,".str"))
+    if (strstr(rop, ".str"))
     {
-        strcat(buffer1,rop);
+        strcat(buffer1, rop);
         rop = buffer1;
     }
     Lop = Lsymbol->serial;
-    if (!strcmp(Lop,"-1"))
+    if (!strcmp(Lop, "-1"))
     {
         Lop = Lsymbol->name;
-        strcat(buffer2,Lop);
+        strcat(buffer2, Lop);
         Lop = buffer2;
     }
     //printf("%s\n",Lop);
@@ -893,7 +893,7 @@ int genVarDec(ptrast root)
                         return false;
                     if (strlen(rightValue) > 4)
                     {
-                        //printf("%s\n",rightValue);                 
+                        //printf("%s\n",rightValue);
                         free(rightValue);
                         //system("pause");
                     }
@@ -1114,12 +1114,12 @@ char *genExpr(ptrast root)
             }
             else if (!strcmp(symbol->type, "STR"))
             {
-                char BUFFER[10]="@";
+                char BUFFER[10] = "@";
                 char *TEMP = symbol->serial;
                 que_push(FuncBody, getLLVMStrAssign(dataType, leftOp, rightOp));
-                if(!strcmp(symbol->serial,"-1"))
+                if (!strcmp(symbol->serial, "-1"))
                 {
-                    strcat(BUFFER,symbol->name);
+                    strcat(BUFFER, symbol->name);
                     TEMP = BUFFER;
                 }
                 sprintf(buffer, "%sstore %s %%%d, %s* %s, align %d\n", Tab, dataType, tempNum++, dataType, TEMP, align);
