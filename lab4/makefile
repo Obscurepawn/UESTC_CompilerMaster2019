@@ -1,44 +1,42 @@
-FLAGS=$(shell llvm-config --cflags --ldflags --libs)
-FILE_NAME = genllvm
+CC = gcc
 
-genllvm:genllvm.o makeAst.o lrparser.tab.o ast.o lex.yy.o HashMap.o
-	gcc -o $(FILE_NAME) genllvm.o makeAst.o lrparser.tab.o ast.o lex.yy.o HashMap.o 
-	$(RM) *.o lex.yy.c *.tab.h *.tab.c *.bc
+DIR_SRC := ./src
+DIR_OBJ := ./obj
+DIR_BIN := ./bin
+DIR_INC := ./include
 
-genllvm.o:genllvm.c lrparser.tab.h 
-	gcc -c genllvm.c
+vpath %.c src
+vpath %.h include
+vpath %.o obj
+vpath %.exe %.out bin
 
-HashMap.o:HashMap.c HashMap.h
-	gcc -c HashMap.c
+FILE = 
+SRC := $(wildcard ${DIR_SRC}/*.c)
+OBJ = $(patsubst %.c,${DIR_OBJ}/%.o,$(notdir $(SRC)))
+parser =  lrparser.tab
+lex = lex.yy
 
-lrparser.tab.c lrparser.tab.h:lrparser.y
-	bison -d lrparser.y
+TARGET = genllvm.out
 
-makeAst.o:makeAst.c makeAst.h
-	gcc -c makeAst.c
+BIN_TARGET = ${DIR_BIN}/${TARGET}
 
-lrparser.tab.o:lrparser.tab.c ast.h
-	gcc -c lrparser.tab.c
+CFLAGS = -g -O2 -I${DIR_INC} 
 
-lex.yy.o:lex.yy.c lrparser.tab.h
-	gcc -c lex.yy.c
+${BIN_TARGET}:  ${OBJ}  ${DIR_OBJ}/${parser}.o  ${DIR_OBJ}/${lex}.o
+	${CC} ${CFLAGS} ${OBJ} ${DIR_OBJ}/${parser}.o  ${DIR_OBJ}/${lex}.o -o $@
+	$(RM) ${DIR_OBJ}/*.o ${DIR_INC}/*.tab.h ${DIR_SRC}/*.tab.c ${DIR_SRC}/*.yy.c ${DIR_SRC}/*.tab.h *.o 
 
-ast.o:ast.c ast.h
-	gcc -c ast.c
+${OBJ}: ${SRC}  ${DIR_SRC}/${parser}.c  ${DIR_SRC}/${lex}.c  
+	${CC} ${CFLAGS} -c $?
+	mv *.o ${DIR_OBJ}/
 
-lex.yy.c:lrlex.l
-	flex lrlex.l
-
-windows_clang_build: 
-	clang -target x86_64-pc-windows-gnu test.c -o hello.exe
-
-windows_llvm_build:
-	clang -target x86_64-pc-windows-gnu test.c -emit-llvm -S
-
-llvm_api_build:
-	clang -c `llvm-config --cflags --includedir` $(FILE_NAME).c
-	clang++ $(FILE_NAME).o `llvm-config --libs  --system-libs  --cxxflags --ldflags` -o $(FILE_NAME)
-	$(RM) *.o lex.yy.c *.tab.h *.tab.c *.bc
+${DIR_SRC}/${parser}.c  ${DIR_SRC}/${lex}.c:  ${DIR_SRC}/lrparser.y  ${DIR_SRC}/lrlex.l
+	$(MAKE) -C ${DIR_SRC}
 
 clean:
-	$(RM) *.o lex.yy.c *.tab.h *.tab.c *.bc
+	$(RM) ${DIR_OBJ}/*.o ${DIR_INC}/*.tab.h ${DIR_SRC}/*.tab.c ${DIR_SRC}/*.yy.c ${DIR_SRC}/*.tab.h *.o 
+
+run:
+	${BIN_TARGET}  ${FILE}
+
+ 
