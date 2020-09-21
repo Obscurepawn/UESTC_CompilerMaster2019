@@ -11,7 +11,7 @@ Run way:
 2.sample: make fun file=./example/test.c  
   [test.c has been already prepared,you can directly run to see what will happened]  
   
-Something should be paied attention:  
+Something should be paied attention to:  
 1.My makefile still has some bugs.Once I leave the files which are *.o,  
   the second Compiler will go somethin wrong.  :() But I don't know why.  
 2.Dir explain:  
